@@ -11,10 +11,10 @@ public class Main {
         System.out.println("Saluti da Roma");
 
         //create 4 jobs
-        Job job1 = new Job("A", 10, 5); //slack time = 5
-        Job job2 = new Job("B", 35, 32); //slack time = 3
-        Job job3 = new Job("C", 20, 2); //slack time = 18
-        Job job4 = new Job("D", 25, 1); //slack time = 24
+        Job job1 = new Job("A", 100, new int[][]{{1,4},{2,6},{3,2}});
+        Job job2 = new Job("B", 100, new int[][]{{1,2},{2,5},{3,9}});
+        Job job3 = new Job("C", 100, new int[][]{{1,12},{2,3},{3,8}});
+        Job job4 = new Job("D", 100, new int[][]{{1,7},{2,6},{3,8}});
 
         ModelLoader.getInstance().addJob(job1);
         ModelLoader.getInstance().addJob(job2);
