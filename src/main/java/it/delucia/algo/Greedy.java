@@ -2,7 +2,10 @@ package it.delucia.algo;
 
 import it.delucia.model.Job;
 import it.delucia.model.Machine;
+import it.delucia.model.ModelLoader;
+import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class Greedy {
@@ -33,7 +36,13 @@ public class Greedy {
         if(!initialized) {
             throw new RuntimeException("Greedy not initialized");
         }
-        destruction();
+        Pair<Job, Job> extractedJobs = destruction();
+        //create a list of jobs that contains the extracted jobs
+        List<Job> jobs = new LinkedList<>();
+        jobs.add(extractedJobs.getLeft());
+        jobs.add(extractedJobs.getRight());
+        int makespan = localSearch(jobs);
+        System.out.println(">> Local Search: Makespan: " + makespan);
     }
 
     //print all jobs
@@ -46,7 +55,7 @@ public class Greedy {
         }
     }
 
-    public void destruction(){
+    private Pair<Job,Job> destruction(){
         System.out.println("Greedy: destruction");
         System.out.println("Initial jobs list");
         printJobs();
@@ -63,23 +72,59 @@ public class Greedy {
 
         //print the remaining jobs
         System.out.println("Greedy: remaining jobs");
+        //create a pair with the extracted jobs and return it
+        return Pair.of(job_extracted_1, job_extracted_2);
     }
 
-    private void localSearch(List<Job> jobs){
+    public int localSearch(List<Job> jobs){
         System.out.println("Greedy: local search");
         //evaluate which is the best execution order of the remaining jobs. The evaluation is based on the makespan
         if(jobs.size() < 2) {
             throw new RuntimeException("Greedy: jobs list size is <= 2");
-        }else if(jobs.size() == 2){
-            //evaluate the makespan of the two jobs in the current order
-            Job job_extracted_1 = jobs.get(0);
-            Job job_extracted_2 = jobs.get(1);
-            //                              M1                                                      M2
-            //                               2                                                       1
-            int makespan_1 = job_extracted_1.getProcessingTime(1) + job_extracted_2.getProcessingTime(1);  // 3
-            //                               6                                                       3
-            int makespan_2 = job_extracted_1.getProcessingTime(2) + job_extracted_2.getProcessingTime(2);
-            
+        }else {
+            int numberOfJobs = jobs.size();
+            int numberOfMachines = ModelLoader.getInstance().getNumberOfMachines();
+            System.out.println("Greedy: number of jobs: "+numberOfJobs);
+            System.out.println("Greedy: number of machines: "+numberOfMachines);
+            //create a matrix of size numberOfJobs x numberOfMachines
+            int[][] matrix = new int[numberOfJobs][numberOfMachines];
+            //initialize the matrix
+            for(int i = 0; i < numberOfJobs; i++) {
+                for(int j = 0; j < numberOfMachines; j++) {
+                    matrix[i][j] = 0;
+                }
+            }
+            //complete the first row with all the processing times of the jobs, the i cell contains the sum of the previous processing time plus the current one
+            for(int i = 0; i < numberOfMachines; i++) {
+                if(i == 0) {
+                    matrix[0][i] = jobs.get(0).getProcessingTime(1);
+                }else {
+                    matrix[0][i] = matrix[0][i-1] + jobs.get(0).getProcessingTime(1+i);
+                }
+            }
+            //complete the first column with all processing time of the all jobs at machine 1
+            for(int i = 1; i < numberOfJobs; i++) {
+                    matrix[i][0] = matrix[i-1][0] + jobs.get(i).getProcessingTime(1);
+            }
+
+
+            //complete the matrix
+            for(int i = 1; i < numberOfJobs; i++) {
+                for(int j = 1; j < numberOfMachines; j++) {
+                    matrix[i][j] = Math.max(matrix[i-1][j], matrix[i][j-1]) + jobs.get(i).getProcessingTime(j+1);
+                }
+            }
+
+            //print the matrix for debug
+            for(int i = 0; i < numberOfJobs; i++) {
+                for(int j = 0; j < numberOfMachines; j++) {
+                    System.out.print(" "+matrix[i][j]);
+                }
+                System.out.println(" ");
+            }
+
+            //return the makespan
+            return matrix[numberOfJobs-1][numberOfMachines-1];
 
 
         }

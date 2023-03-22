@@ -2,11 +2,9 @@ package it.delucia.model;
 
 public class Machine {
     private int id;
-    private int processingTime;
 
-    public Machine(int id, int processingTime) {
+    public Machine(int id) {
         this.id = id;
-        this.processingTime = processingTime;
     }
 
     public int getId() {
@@ -17,13 +15,6 @@ public class Machine {
         this.id = id;
     }
 
-    public int getProcessingTime() {
-        return processingTime;
-    }
-
-    public void setProcessingTime(int processingTime) {
-        this.processingTime = processingTime;
-    }
 
     public String getMachineName(){
         return "M" + id;
@@ -32,6 +23,8 @@ public class Machine {
     //toString method
     @Override
     public String toString() {
-        return "Machine{" + "id=" + id + ", processingTime=" + processingTime + '}';
+        return "Machine{" +
+                "id=" + id +
+                '}';
     }
 }
