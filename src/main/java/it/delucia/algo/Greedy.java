@@ -78,6 +78,24 @@ public class Greedy {
 
     public int localSearch(List<Job> jobs){
         System.out.println("Greedy: local search");
+        System.out.println("print job time on machines");
+        //print a table where each row is a job and each column is a machine, print also the header
+        //print the header
+        System.out.print("Job\t");
+        for(Machine machine: machines) {
+            System.out.print(machine.getId()+"\t");
+        }
+        System.out.println();
+        //print the jobs
+        for(Job job: jobs) {
+            System.out.print(job.getId()+"\t");
+            for(Machine machine: machines) {
+                System.out.print(job.getProcessingTime(machine.getId())+"\t");
+            }
+            System.out.println();
+        }
+
+
         //evaluate which is the best execution order of the remaining jobs. The evaluation is based on the makespan
         if(jobs.size() < 2) {
             throw new RuntimeException("Greedy: jobs list size is <= 2");
