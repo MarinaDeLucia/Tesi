@@ -5,19 +5,19 @@ import java.util.Map;
 import java.util.Objects;
 
 public class Job implements Comparable<Job> {
-    private String id;
+    private int id;
     private int dueDate;
     private Map<Integer, Integer> processingTimesMap; //key: machine id, value: processing time
     private int slackTime = -1; //slack time of the job
     private int processingTime = -1; //processing time of the job
 
-    public Job(String id, int dueDate, Map<Integer, Integer> processingTimesMap) {
+    public Job(int id, int dueDate, Map<Integer, Integer> processingTimesMap) {
         this.id = id;
         this.dueDate = dueDate;
         this.processingTimesMap = processingTimesMap;
     }
 
-    public Job(String id, int dueDate, int [][] processingMatrix) {
+    public Job(int id, int dueDate, int [][] processingMatrix) {
         this.id = id;
         this.dueDate = dueDate;
         processingMatrixToMap(processingMatrix);
@@ -30,11 +30,11 @@ public class Job implements Comparable<Job> {
         }
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -79,7 +79,7 @@ public class Job implements Comparable<Job> {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 97 * hash + (this.id != null ? this.id.hashCode() : 0);
+        hash = 97 * hash + this.id;
         return hash;
     }
 

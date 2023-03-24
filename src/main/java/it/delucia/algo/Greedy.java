@@ -1,5 +1,6 @@
 package it.delucia.algo;
 
+import it.delucia.Settings;
 import it.delucia.model.Job;
 import it.delucia.model.Machine;
 import it.delucia.model.ModelLoader;
@@ -153,7 +154,19 @@ public class Greedy {
     }
 
 
+    public int[][] generateAllPossibleOrder(List<Job> sequence){
+        //complete an integer array with all id of the jobs
+        int[] jobsId = new int[sequence.size()];
+        for(int i = 0; i < sequence.size(); i++) {
+            jobsId[i] = sequence.get(i).getId();
+        }
+        int maxOrders = Utils.factorial(sequence.size());
+        int[][] allOrders = new int[maxOrders][sequence.size()];
+        //generate all possible orders
+        allOrders = Utils.generateAllPossibleOrder(jobsId);
+        return allOrders;
 
+    }
 
 
 }

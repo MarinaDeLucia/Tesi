@@ -14,9 +14,9 @@ public class Main {
         System.out.println("Saluti da Roma");
 
         //create 4 jobs
-        Job job1 = new Job("A", 100, new int[][]{{1,2},{2,3},{3,3},{4,5}});
-        Job job2 = new Job("B", 100, new int[][]{{1,4},{2,7},{3,4},{4,1}});
-        Job job3 = new Job("C", 100, new int[][]{{1,1},{2,1},{3,3},{4,2}});
+        Job job1 = new Job(1, 100, new int[][]{{1,2},{2,3},{3,3},{4,5}});
+        Job job2 = new Job(2, 100, new int[][]{{1,4},{2,7},{3,4},{4,1}});
+        Job job3 = new Job(3, 100, new int[][]{{1,1},{2,1},{3,3},{4,2}});
 
         ModelLoader.getInstance().addJob(job1);
         ModelLoader.getInstance().addJob(job2);
