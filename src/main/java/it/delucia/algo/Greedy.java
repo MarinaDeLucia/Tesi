@@ -36,7 +36,7 @@ public class Greedy {
     }
 
     //implement greedy algorithm
-    public void run() {
+    public Pair<List<Job>,Integer> run() {
         if(!initialized) {
             throw new RuntimeException("Greedy not initialized");
         }
@@ -69,8 +69,11 @@ public class Greedy {
         //il makespan. Alla fine del ciclo, il job che mi ha dato il makespan minore lo inserisco nella
         //lista extractedJobs nella posizione che mi ha dato il makespan minore
         //per ogni job rimanente
+        int currentBestMakespan = 0;
         for(Job job: jobs) {
-            this.extractedJobs = findNewBestOrder(this.extractedJobs, job);
+            Pair<List<Job>, Integer> newBestOrder = findNewBestOrder(this.extractedJobs, job);
+            this.extractedJobs = newBestOrder.getLeft();
+            currentBestMakespan = newBestOrder.getRight();
         }
         this.solution = new LinkedList<>(this.extractedJobs);
         //print the solution
@@ -78,6 +81,9 @@ public class Greedy {
         for(Job job: this.solution) {
             System.out.println(job);
         }
+
+        Pair<List<Job>,Integer> solution = Pair.of(this.solution, currentBestMakespan);
+        return solution;
 
     }
 
@@ -213,7 +219,7 @@ public class Greedy {
      * @param newElement
      * @return
      */
-    public List<Job> findNewBestOrder(List<Job> immutableSeq, Job newElement){
+    public Pair<List<Job>,Integer> findNewBestOrder(List<Job> immutableSeq, Job newElement){
         System.out.println("Greedy: find new best order");
         //create a list of jobs that contains the immutableSeq and the newElement in the head
         List<Job> result = new LinkedList<>();
@@ -247,7 +253,8 @@ public class Greedy {
         }
         //return the best sequence
         System.out.println("Greedy: best makespan: "+bestMakespan);
-        return result;
+        Pair<List<Job>,Integer> pair = Pair.of(result, bestMakespan);
+        return pair;
     }
 
 
@@ -276,7 +283,7 @@ public class Greedy {
         Machine machine3 = new Machine(3);
         Greedy.getInstance().init(jobs,4);
 
-        List<Job> result = Greedy.getInstance().findNewBestOrder(jobs, job5);
+        List<Job> result = Greedy.getInstance().findNewBestOrder(jobs, job5).getLeft();
 
         System.out.println("Greedy: result");
         for(Job job: result) {

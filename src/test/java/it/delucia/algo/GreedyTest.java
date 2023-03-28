@@ -3,6 +3,7 @@ package it.delucia.algo;
 import it.delucia.model.Job;
 import it.delucia.model.Machine;
 import it.delucia.model.ModelLoader;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.*;
 
 import java.util.Arrays;
@@ -242,4 +243,32 @@ class GreedyTest {
 
         result = "\t[PASSED]";
     }
-}
+
+    @Test
+    @DisplayName("[JUnit] test Greedy (jobs=3, machines=4)")
+    void testGreedy3J4M(TestInfo info) {
+        message = info.getDisplayName();
+        result = "\t[FAILED]";
+        List<Job> list = new LinkedList<>();
+        Job job1 = new Job(1, 100, new int[][]{{1,2},{2,3},{3,3},{4,5}});
+        Job job2 = new Job(2, 100, new int[][]{{1,4},{2,7},{3,4},{4,1}});
+        Job job3 = new Job(3, 100, new int[][]{{1,1},{2,1},{3,3},{4,2}});
+        List<Job> jobs = new LinkedList<>();
+        jobs.add(job1);
+        jobs.add(job2);
+        jobs.add(job3);
+        Greedy.getInstance().init(jobs, 4);
+        Pair<List<Job>, Integer> solution = Greedy.getInstance().run();
+        List<Job> resultList = solution.getKey();
+        int makespan = solution.getValue();
+        assertEquals(3, resultList.size());
+        assertEquals(3, resultList.get(0).getId());
+        assertEquals(1, resultList.get(1).getId());
+        assertEquals(2, resultList.get(2).getId());
+        assertEquals(19, makespan);
+        result = "\t[PASSED]";
+    }
+
+
+
+    }
