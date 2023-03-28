@@ -34,17 +34,11 @@ public class Main {
         int makespan = ModelLoader.getInstance().getMakespan();
         System.out.println("Overall makespan: " + makespan);
 
-        List<Job> greedyJobs = new LinkedList<>();
-        greedyJobs.add(job1);
-        greedyJobs.add(job2);
-        greedyJobs.add(job3);
+        // ----------------- GREEDY -----------------
+        //init the greedy algorithm
+        Greedy.getInstance().init(sortedJobs, 4);
+        Greedy.getInstance().run();
 
-
-        System.out.println("init greedy");
-        Greedy.getInstance().init(greedyJobs,4);
-        System.out.println("run greedy");
-        int localMakeSpan = Greedy.getInstance().localSearch(greedyJobs);
-        System.out.println("Local makespan: " + localMakeSpan);
 
 
     }

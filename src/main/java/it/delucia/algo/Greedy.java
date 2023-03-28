@@ -13,7 +13,10 @@ public class Greedy {
     //implement singleton pattern
     private static Greedy instance = null;
     private List<Job> jobs = null;
+    private List<Job> extractedJobs = new LinkedList<>();
     private boolean initialized = false;
+
+    private List<Job> solution = null;
 
     private Greedy() {
     }
@@ -27,6 +30,7 @@ public class Greedy {
 
     public void init(List<Job> jobs, int numberOfMachines) {
         this.jobs = jobs;
+        System.out.println(">> Greedy: Number of jobs: " + jobs.size());
         initialized = true;
         ModelLoader.getInstance().setNumberOfMachines(numberOfMachines);
     }
@@ -38,11 +42,43 @@ public class Greedy {
         }
         Pair<Job, Job> extractedJobs = destruction();
         //create a list of jobs that contains the extracted jobs
-        List<Job> jobs = new LinkedList<>();
-        jobs.add(extractedJobs.getLeft());
-        jobs.add(extractedJobs.getRight());
-        int makespan = localSearch(jobs);
-        System.out.println(">> Local Search: Makespan: " + makespan);
+        List<Job> jobs_12 = new LinkedList<>();
+        jobs_12.add(extractedJobs.getLeft());
+        jobs_12.add(extractedJobs.getRight());
+        int makespan_12 = localSearch(jobs_12);
+        //create a new list with the reverdesd order of the extracted jobs
+        List<Job> jobs_21 = new LinkedList<>();
+        jobs_21.add(extractedJobs.getRight());
+        jobs_21.add(extractedJobs.getLeft());
+        int makespan_21 = localSearch(jobs_21);
+        //if makespan_12 < makespan_21 then add the jobs in the original order in the extracted jobs list
+        if(makespan_12 < makespan_21) {
+            this.extractedJobs.add(extractedJobs.getLeft());
+            this.extractedJobs.add(extractedJobs.getRight());
+            System.out.println(">> Local Search: Makespan: " + makespan_12);
+        } else {
+            //else add the jobs in the reversed order in the extracted jobs list
+            this.extractedJobs.add(extractedJobs.getRight());
+            this.extractedJobs.add(extractedJobs.getLeft());
+            System.out.println(">> Local Search: Makespan: " + makespan_21);
+        }
+        //ho estratto i primi due job e valutato l'ordinamento migliore in base al makespan
+        //ora devo valutare l'ordinamento migliore tra i rimanenti job
+        //ciclerò la lista jobs, che ora contiene tutti i job rimanenti, per ogni job
+        //provo a inserirlo nella lista extractedJobs in tutte le posizioni possibili, e quindi valuto
+        //il makespan. Alla fine del ciclo, il job che mi ha dato il makespan minore lo inserisco nella
+        //lista extractedJobs nella posizione che mi ha dato il makespan minore
+        //per ogni job rimanente
+        for(Job job: jobs) {
+            this.extractedJobs = findNewBestOrder(this.extractedJobs, job);
+        }
+        this.solution = new LinkedList<>(this.extractedJobs);
+        //print the solution
+        System.out.println("Greedy: solution");
+        for(Job job: this.solution) {
+            System.out.println(job);
+        }
+
     }
 
     //print all jobs
