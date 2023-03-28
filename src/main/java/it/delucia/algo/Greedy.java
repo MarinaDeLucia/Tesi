@@ -14,7 +14,6 @@ public class Greedy {
     private static Greedy instance = null;
     private List<Job> jobs = null;
     private boolean initialized = false;
-    private List<Machine> machines = null;
 
     private Greedy() {
     }
@@ -26,10 +25,10 @@ public class Greedy {
         return instance;
     }
 
-    public void init(List<Job> jobs, List<Machine> machines) {
+    public void init(List<Job> jobs, int numberOfMachines) {
         this.jobs = jobs;
         initialized = true;
-        this.machines = machines;
+        ModelLoader.getInstance().setNumberOfMachines(numberOfMachines);
     }
 
     //implement greedy algorithm
@@ -83,15 +82,15 @@ public class Greedy {
         //print a table where each row is a job and each column is a machine, print also the header
         //print the header
         System.out.print("Job\t");
-        for(Machine machine: machines) {
-            System.out.print(machine.getId()+"\t");
+        for(int i = 1; i <= ModelLoader.getInstance().getNumberOfMachines(); i++) {
+            System.out.print("M"+i+"\t");
         }
         System.out.println();
         //print the jobs
         for(Job job: jobs) {
             System.out.print(job.getId()+"\t");
-            for(Machine machine: machines) {
-                System.out.print(job.getProcessingTime(machine.getId())+"\t");
+            for(int i = 1; i <= ModelLoader.getInstance().getNumberOfMachines(); i++) {
+                System.out.print(job.getProcessingTime(i)+"\t");
             }
             System.out.println();
         }
@@ -239,7 +238,7 @@ public class Greedy {
         Machine machine1 = new Machine(1);
         Machine machine2 = new Machine(2);
         Machine machine3 = new Machine(3);
-        Greedy.getInstance().init(jobs, machines);
+        Greedy.getInstance().init(jobs,4);
 
         List<Job> result = Greedy.getInstance().findNewBestOrder(jobs, job5);
 

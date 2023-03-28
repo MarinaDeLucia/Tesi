@@ -22,8 +22,6 @@ public class Main {
         ModelLoader.getInstance().addJob(job2);
         ModelLoader.getInstance().addJob(job3);
 
-        ModelLoader.getInstance().setNumberOfMachines(4);
-
         //get sorted list of jobs
         List<Job> sortedJobs = ModelLoader.getInstance().getSortedJobs();
 
@@ -41,14 +39,9 @@ public class Main {
         greedyJobs.add(job2);
         greedyJobs.add(job3);
 
-        List<Machine> machines = new LinkedList<>();
-        machines.add(new Machine(1));
-        machines.add(new Machine(2));
-        machines.add(new Machine(3));
-        machines.add(new Machine(4));
 
         System.out.println("init greedy");
-        Greedy.getInstance().init(greedyJobs, machines);
+        Greedy.getInstance().init(greedyJobs,4);
         System.out.println("run greedy");
         int localMakeSpan = Greedy.getInstance().localSearch(greedyJobs);
         System.out.println("Local makespan: " + localMakeSpan);

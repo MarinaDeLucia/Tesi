@@ -40,19 +40,12 @@ class GreedyTest {
         Job job1 = new Job(1, 100, new int[][]{{1,2},{2,3},{3,3},{4,5}});
         Job job2 = new Job(2, 100, new int[][]{{1,4},{2,7},{3,4},{4,1}});
         Job job3 = new Job(3, 100, new int[][]{{1,1},{2,1},{3,3},{4,2}});
-        ModelLoader.getInstance().setNumberOfMachines(4);
-
-        List<Machine> machines = new LinkedList<>();
-        machines.add(new Machine(1));
-        machines.add(new Machine(2));
-        machines.add(new Machine(3));
-        machines.add(new Machine(4));
 
         List<Job> greedyJobs = new LinkedList<>();
         greedyJobs.add(job1);
         greedyJobs.add(job2);
         greedyJobs.add(job3);
-        Greedy.getInstance().init(greedyJobs, machines);
+        Greedy.getInstance().init(greedyJobs,4);
         int localMakeSpan = Greedy.getInstance().localSearch(greedyJobs);
         result = "\t[FAILED]";
         assertEquals(22, localMakeSpan);
@@ -67,20 +60,14 @@ class GreedyTest {
         Job job2 = new Job(2, 100, new int[][]{{1,4},{2,7},{3,4},{4,1}});
         Job job3 = new Job(3, 100, new int[][]{{1,1},{2,1},{3,3},{4,2}});
         Job job4 = new Job(4, 100, new int[][]{{1,3},{2,6},{3,2},{4,2}});
-        ModelLoader.getInstance().setNumberOfMachines(4);
 
-        List<Machine> machines = new LinkedList<>();
-        machines.add(new Machine(1));
-        machines.add(new Machine(2));
-        machines.add(new Machine(3));
-        machines.add(new Machine(4));
 
         List<Job> greedyJobs = new LinkedList<>();
         greedyJobs.add(job1);
         greedyJobs.add(job2);
         greedyJobs.add(job3);
         greedyJobs.add(job4);
-        Greedy.getInstance().init(greedyJobs, machines);
+        Greedy.getInstance().init(greedyJobs,4);
         int localMakeSpan = Greedy.getInstance().localSearch(greedyJobs);
         result = "\t[FAILED]";
         assertEquals(24, localMakeSpan);
@@ -112,12 +99,7 @@ class GreedyTest {
         Job job8 = new Job(8, 100, new int[][]{{1,2},{2,5},{3,2},{4,5},{5,1},{6,2},{7,6},{8,1},{9,3},{10,8}});
         Job job9 = new Job(9, 100, new int[][]{{1,1},{2,3},{3,5},{4,4},{5,2},{6,1},{7,3},{8,1},{9,2},{10,9}});
         Job job10 = new Job(10, 100, new int[][]{{1,1},{2,6},{3,5},{4,3},{5,1},{6,3},{7,1},{8,2},{9,8},{10,7}});
-        ModelLoader.getInstance().setNumberOfMachines(10);
 
-        List<Machine> machines = new LinkedList<>();
-        for (int i = 1; i <= 10; i++) {
-            machines.add(new Machine(i));
-        }
 
         List<Job> greedyJobs = new LinkedList<>();
         greedyJobs.add(job1);
@@ -131,7 +113,7 @@ class GreedyTest {
         greedyJobs.add(job9);
         greedyJobs.add(job10);
 
-        Greedy.getInstance().init(greedyJobs, machines);
+        Greedy.getInstance().init(greedyJobs,10);
         int localMakeSpan = Greedy.getInstance().localSearch(greedyJobs);
         result = "\t[FAILED]";
         assertEquals(137, localMakeSpan);
@@ -151,6 +133,7 @@ class GreedyTest {
         list.add(new Job(1, 1, new int[][]{{1,1}}));
         list.add(new Job(2, 1, new int[][]{{1,1}}));
         list.add(new Job(3, 1, new int[][]{{1,1}}));
+        Greedy.getInstance().init(list,1);
 
         int[][] resultMatrix = Greedy.getInstance().generateAllPossibleOrder(list);
 
@@ -197,6 +180,7 @@ class GreedyTest {
         list.add(new Job(5, 1, new int[][]{{1,1}}));
         list.add(new Job(6, 1, new int[][]{{1,1}}));
         list.add(new Job(7, 1, new int[][]{{1,1}}));
+        Greedy.getInstance().init(list,1);
 
         int[][] resultMatrix = Greedy.getInstance().generateAllPossibleOrder(list);
 
