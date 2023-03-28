@@ -75,6 +75,10 @@ public class Job implements Comparable<Job> {
         return "Job{" + "id=" + id + ", dueDate=" + dueDate + ", processingTime=" + processingTime + '}';
     }
 
+    public String printId(){
+        return "J" + id;
+    }
+
 
     @Override
     public int hashCode() {

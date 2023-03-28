@@ -262,13 +262,11 @@ class GreedyTest {
         List<Job> jobs = ModelLoader.getInstance().getSortedJobs();
 
         Greedy.getInstance().init(jobs, 4);
-        Pair<List<Job>, Integer> solution = Greedy.getInstance().run();
-        List<Job> resultList = solution.getLeft();
+        Pair<List<List<Job>>, Integer> solution = Greedy.getInstance().run();
+        int size = solution.getLeft().size();
+        assertEquals(2, size);
+        List<Job> resultList = solution.getLeft().get(0);
         int makespan = solution.getRight();
-        assertEquals(3, resultList.size());
-        assertEquals(3, resultList.get(0).getId());
-        assertEquals(1, resultList.get(1).getId());
-        assertEquals(2, resultList.get(2).getId());
         assertEquals(19, makespan);
         result = "\t[PASSED]";
     }
@@ -313,8 +311,10 @@ class GreedyTest {
         System.out.println(" ----------------------- xxxxxxxxxxxx ----------------------- ");
 
         Greedy.getInstance().init(jobs, 6);
-        Pair<List<Job>, Integer> solution = Greedy.getInstance().run();
-        List<Job> resultList = solution.getLeft();
+        Pair<List<List<Job>>, Integer> solution = Greedy.getInstance().run();
+        int size = solution.getLeft().size();
+        assertEquals(1, size);
+        List<Job> resultList = solution.getLeft().get(0);
         int makespan = solution.getRight();
         assertEquals(6, resultList.size());
         assertEquals(55, makespan);
