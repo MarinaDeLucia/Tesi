@@ -8,6 +8,7 @@ public class ModelLoader {
     private List<Job> jobs = new ArrayList<>();
 
     private int numberOfMachines = 0;
+
     private ModelLoader() {
     }
 
@@ -16,6 +17,13 @@ public class ModelLoader {
             instance = new ModelLoader();
         }
         return instance;
+    }
+
+    public void clear() {
+        if (jobs != null) {
+            jobs.clear();
+        }
+        numberOfMachines = 0;
     }
 
     public void setNumberOfMachines(int numberOfMachines) {
@@ -36,7 +44,7 @@ public class ModelLoader {
 
     //returns sorted jobs list
     public List<Job> getSortedJobs() {
-        jobs.sort((Job o1, Job o2) ->  o2.getSlackTime()- o1.getSlackTime() ) ;
+        jobs.sort((Job o1, Job o2) -> o1.getSlackTime() - o2.getSlackTime());
         return jobs;
     }
 
