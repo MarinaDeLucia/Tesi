@@ -6,8 +6,7 @@ import it.delucia.model.Machine;
 import it.delucia.model.ModelLoader;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class Greedy {
     //implement singleton pattern
@@ -82,23 +81,41 @@ public class Greedy {
         jobs_21.add(extractedJobs.getLeft());
         int makespan_21 = localSearch(jobs_21);
         //if makespan_12 < makespan_21 then add the jobs in the original order in the extracted jobs list
+
+        List<List<Job>> allSolutions = new LinkedList<>();
+
         if (makespan_12 < makespan_21) {
-            this.extractedJobs.add(extractedJobs.getLeft());
-            this.extractedJobs.add(extractedJobs.getRight());
             System.out.println(">> Local Search: Makespan: " + makespan_12);
-        } else {
+            List<Job> tempSolution = new LinkedList<>();
+            tempSolution.addAll(jobs_12);
+            allSolutions.add(tempSolution);
+        } else if(makespan_12 == makespan_21){
+            //if makespan_12 == makespan_21 then add the jobs in the original order in the extracted jobs list
+            System.out.println(">> Local Search:  Makespan(first one): " + makespan_12);
+            System.out.println(">> Local Search: Makespan(second one): " + makespan_21);
+            List<Job> tempSolution = new LinkedList<>();
+            tempSolution.addAll(jobs_12);
+            allSolutions.add(tempSolution);
+            List<Job> tempSolution2 = new LinkedList<>();
+            tempSolution2.addAll(jobs_21);
+            allSolutions.add(tempSolution2);
+        }else {
             //else add the jobs in the reversed order in the extracted jobs list
-            this.extractedJobs.add(extractedJobs.getRight());
-            this.extractedJobs.add(extractedJobs.getLeft());
             System.out.println(">> Local Search: Makespan: " + makespan_21);
+            List<Job> tempSolution = new LinkedList<>();
+            tempSolution.addAll(jobs_21);
+            allSolutions.add(tempSolution);
         }
 
         //stampa la combinazione vincente della fase di distruzione
-        System.out.println("-------------------------- WINNING ORDERED COMBINATION FROM DESTRUCTION PHASE --------------------------");
-        System.out.println(">> Greedy: Extracted Job1: " + extractedJobs.getLeft());
-        System.out.println(">> Greedy: Extracted Job2: " + extractedJobs.getRight());
-        System.out.println(">> Greedy: Makespan: " + Math.min(makespan_12, makespan_21));
-        System.out.println("--------------------------------------------------------------------------------------------------------");
+        for(List<Job> solution : allSolutions){
+            System.out.println("-------------------------- WINNING ORDERED COMBINATION FROM DESTRUCTION PHASE --------------------------");
+            System.out.println(">> Greedy: Extracted Job1: " + solution.get(0));
+            System.out.println(">> Greedy: Extracted Job2: " + solution.get(1));
+            System.out.println(">> Greedy: Makespan: " + Math.min(makespan_12, makespan_21));
+            System.out.println("--------------------------------------------------------------------------------------------------------");
+        }
+
 
         //ho estratto i primi due job e valutato l'ordinamento migliore in base al makespan
         //ora devo valutare l'ordinamento migliore tra i rimanenti job
@@ -108,12 +125,36 @@ public class Greedy {
         //lista extractedJobs nella posizione che mi ha dato il makespan minore
         //per ogni job rimanente
         int currentBestMakespan = 0;
-        for (Job job : jobs) {
-            System.out.println(">>>>>>>>>>>>> INSERTING JOB: " + job + " <<<<<<<<<<<<<<<<");
-            Pair<List<Job>, Integer> newBestOrder = findNewBestOrder(this.extractedJobs, job);
-            this.extractedJobs = newBestOrder.getLeft();
-            currentBestMakespan = newBestOrder.getRight();
+
+        Map<Integer, List<List<Job>>> partialResults = new HashMap<>();
+        Iterator<List<Job>> iterator = allSolutions.iterator();
+        while(iterator.hasNext()){
+            for (Job job : jobs) {
+                System.out.println(">>>>>>>>>>>>> INSERTING JOB: " + job + " <<<<<<<<<<<<<<<<");
+                //find the best order for the current job
+                Pair<List<List<Job>>, Integer> allMinimalSequences = findNewBestOrder(iterator.next(), job);
+                //estraggo tutte le sequenze minimali
+                List<List<Job>> minimalSequences = allMinimalSequences.getLeft();
+                int minimalMakespan = allMinimalSequences.getRight();
+                //aggiorno il makespan corrente
+                if(partialResults.containsKey(minimalMakespan)){
+                    //se il makespan corrente è già presente, aggiungo le nuove sequenze
+                    partialResults.get(minimalMakespan).addAll(minimalSequences);
+                }else{
+                    //se il makespan corrente non è presente, aggiungo il nuovo makespan e le nuove sequenze
+                    partialResults.put(minimalMakespan, minimalSequences);
+                }
+            }
+            //esamino la mappa partialResults e prendo tutte le sequenze associato al makespan minore. Svuoto quindi
+            //la lista allSolutions e aggiungo le nuove sequenze. Infine svuoto la mappa partialResults.
+            int minMakespan = Collections.min(partialResults.keySet());
+            allSolutions.clear();
+            allSolutions.addAll(partialResults.get(minMakespan));
+            partialResults.clear();
         }
+
+
+
         this.solution = new LinkedList<>(this.extractedJobs);
         //print the solution
         System.out.println("Greedy: solution");
@@ -259,14 +300,18 @@ public class Greedy {
      * @param newElement
      * @return
      */
-    public Pair<List<Job>, Integer> findNewBestOrder(List<Job> immutableSeq, Job newElement) {
+    public Pair<List<List<Job>>, Integer> findNewBestOrder(List<Job> immutableSeq, Job newElement) {
         System.out.println("Greedy: find new best order");
         //create a list of jobs that contains the immutableSeq and the newElement in the head
+        List<List<Job>> allEqualMinimalSequences = new LinkedList<>();
         List<Job> result = new LinkedList<>();
         result.addAll(immutableSeq);
         result.add(0, newElement);
 
         int bestMakespan = localSearch(result);
+
+        Map<Integer,List<List<Job>>> map = new HashMap<>(); //map of makespan and sequence
+
 
         //create a cycle where each step move the head one step to the right
         for (int i = 1; i < result.size(); i++) {
@@ -284,16 +329,26 @@ public class Greedy {
             System.out.println("\n--------------------------------------");
             //evaluate the makespan of the new sequence
             int makespan = localSearch(newSeq);
-            //if the makespan is better then the result is the newSeq
+            //if the makespan is better than the result is the newSeq
             if (makespan < bestMakespan) {
                 bestMakespan = makespan;
                 result = newSeq;
+            }
+            if(map.containsKey(makespan)){
+                List<List<Job>> list = map.get(makespan);
+                list.add(newSeq);
+                map.put(makespan,list);
+            }else{
+                List<List<Job>> list = new LinkedList<>();
+                list.add(newSeq);
+                map.put(makespan,list);
             }
 
         }
         //return the best sequence
         System.out.println("Greedy: best makespan: " + bestMakespan);
-        Pair<List<Job>, Integer> pair = Pair.of(result, bestMakespan);
+        Pair<List<List<Job>>, Integer> pair = Pair.of(map.get(bestMakespan), bestMakespan);
+        System.out.println(">>>>> Ho trovato " + map.get(bestMakespan).size() + " sequenze con makespan " + bestMakespan);
         return pair;
     }
 
@@ -322,13 +377,19 @@ public class Greedy {
         Machine machine3 = new Machine(3);
         Greedy.getInstance().init(jobs, 4);
 
-        List<Job> result = Greedy.getInstance().findNewBestOrder(jobs, job5).getLeft();
+        List<List<Job>> result = Greedy.getInstance().findNewBestOrder(jobs, job5).getLeft();
 
-        System.out.println("Greedy: result");
-        for (Job job : result) {
-            System.out.print(job.getId() + " ");
+        //print results numbering the sequence
+        int i = 1;
+        for (List<Job> sequence : result) {
+            System.out.println("Sequence " + i);
+            for (Job job : sequence) {
+                System.out.print(job.getId() + " ");
+            }
+            System.out.println(" ----------------------------------------");
+            i++;
         }
-        System.out.println();
+ 
 
     }
 }
