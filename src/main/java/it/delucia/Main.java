@@ -12,6 +12,8 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Ciao Marina!");
         System.out.println("Saluti da Roma");
+        ModelLoader.getInstance().setMakespanThreshold(10);
+        System.out.println("[DEBUG] THRESHOLD: " + ModelLoader.getInstance().getMakespanThreshold());
 
         //create 4 jobs
         Job job1 = new Job(1, 100, new int[][]{{1,2},{2,3},{3,3},{4,5}});

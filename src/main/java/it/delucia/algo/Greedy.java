@@ -168,15 +168,34 @@ public class Greedy {
 
 
         //stampa la combinazione vincente della fase di costruzione
+        System.out.println("\n\n++++++++++++++++++++++++++++ FINAL SOLUTIONS ++++++++++++++++++++++++++++\n");
+        if(!isFeasible(currentBestMakespan)){
+            System.out.println("\n**********************          WARNING         **********************\n");
+            System.out.println("                             PLAN NOT FEASIBLE\n");
+            System.out.println(">> The Solution Plan is NOT FEASIBLE because the makespan is greater than the threshold:"+ ModelLoader.getInstance().getMakespanThreshold());
+            System.out.println(">> amount of time needed to complete all jobs: " + (currentBestMakespan - ModelLoader.getInstance().getMakespanThreshold()));
+            System.out.println(("************************************************************************"));
+        }
+        int i=1;
         for(List<Job> solution : allSolutions) {
-            System.out.println(" ++++++++++++++++++++++++++++ FINAL SOLUTIONS ++++++++++++++++++++++++++++");
-            int i=1;
             System.out.println(">> PLAN "+ i + ")");
+            String feasible = isFeasible(currentBestMakespan) ? "FEASIBLE" : "NOT FEASIBLE";
+            System.out.println(">> Greedy Makespan: " + currentBestMakespan);
+            System.out.println(">> Makspan Trheshold: " + ModelLoader.getInstance().getMakespanThreshold());
+            System.out.println(">> The Solution Plan is: " + feasible);
+
             //print all jobs of this plan in one line, use java stream and use "," as separator
             System.out.println(solution.stream().map(Job::printId).collect(Collectors.joining(", ")));
+            i++;
+            System.out.println("------------------------------------------------------------------------");
         }
         //return all the minimal solutions according to the method signature
         return Pair.of(allSolutions, currentBestMakespan);
+    }
+
+    private boolean isFeasible(int makespan) {
+        int makespanThreshold = ModelLoader.getInstance().getMakespanThreshold();
+        return makespan <= makespanThreshold;
     }
 
     //print all jobs
@@ -392,12 +411,11 @@ public class Greedy {
         List<Job> jobs = new LinkedList<>();
         ModelLoader.getInstance().setNumberOfMachines(3);
 
-
         Job job1 = new Job(1, 100, new int[][]{{1, 10}, {2, 12}, {3, 3}});
-        Job job2 = new Job(2, 100, new int[][]{{1, 5}, {2, 1}, {3, 6}});
-        Job job3 = new Job(3, 100, new int[][]{{1, 1}, {2, 11}, {3, 6}});
-        Job job4 = new Job(4, 100, new int[][]{{1, 4}, {2, 4}, {3, 7}});
-        Job job5 = new Job(5, 100, new int[][]{{1, 10}, {2, 5}, {3, 3}});
+        Job job2 = new Job(2, 100, new int[][]{{1,  5}, {2,  1}, {3, 6}});
+        Job job3 = new Job(3, 100, new int[][]{{1,  1}, {2, 11}, {3, 6}});
+        Job job4 = new Job(4, 100, new int[][]{{1,  4}, {2,  4}, {3, 7}});
+        Job job5 = new Job(5, 100, new int[][]{{1, 10}, {2,  5}, {3, 3}});
 
         jobs.add(job1);
         jobs.add(job2);

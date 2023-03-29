@@ -6,6 +6,7 @@ import java.util.List;
 public class ModelLoader {
     private static ModelLoader instance = null;
     private List<Job> jobs = new ArrayList<>();
+    private int makespanThreshold = 100;
 
     private int numberOfMachines = 0;
 
@@ -17,6 +18,14 @@ public class ModelLoader {
             instance = new ModelLoader();
         }
         return instance;
+    }
+
+    public int getMakespanThreshold() {
+        return makespanThreshold;
+    }
+
+    public void setMakespanThreshold(int makespanThreshold) {
+        this.makespanThreshold = makespanThreshold;
     }
 
     public void clear() {
