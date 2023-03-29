@@ -313,7 +313,7 @@ class GreedyTest {
         Greedy.getInstance().init(jobs, 6);
         Pair<List<List<Job>>, Integer> solution = Greedy.getInstance().run();
         int size = solution.getLeft().size();
-        assertEquals(1, size);
+        assertEquals(11, size);
         List<Job> resultList = solution.getLeft().get(0);
         int makespan = solution.getRight();
         assertEquals(6, resultList.size());

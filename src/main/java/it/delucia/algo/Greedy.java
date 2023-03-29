@@ -131,10 +131,11 @@ public class Greedy {
         int currentBestMakespan = 0;
 
         Map<Integer, List<List<Job>>> partialResults = new HashMap<>();
-        Iterator<List<Job>> iterator = allSolutions.iterator();
-        while(iterator.hasNext()){
+
+        for (Job job : jobs) {
             List<List<Job>> newSolutions = new LinkedList<>();
-            for (Job job : jobs) {
+            Iterator<List<Job>> iterator = allSolutions.iterator();
+            while(iterator.hasNext()){
                 System.out.println(">>>>>>>>>>>>> INSERTING JOB: " + job.printId() + " <<<<<<<<<<<<<<<<");
                 //find the best order for the current job
                 Pair<List<List<Job>>, Integer> allMinimalSequences = findNewBestOrder(iterator.next(), job);
@@ -151,16 +152,17 @@ public class Greedy {
                     partialResults.put(minimalMakespan, minimalSequences);
                 }
                 newSolutions.addAll(minimalSequences);
+                if(!iterator.hasNext()){
+                    int minMakespan = Collections.min(partialResults.keySet());
+                    currentBestMakespan = minMakespan;
+
+                    allSolutions = newSolutions;
+                    partialResults.clear();
+                }
             }
             //esamino la mappa partialResults e prendo tutte le sequenze associato al makespan minore. Svuoto quindi
             //la lista allSolutions e aggiungo le nuove sequenze. Infine svuoto la mappa partialResults.
-            if(!iterator.hasNext()){
-                int minMakespan = Collections.min(partialResults.keySet());
-                currentBestMakespan = minMakespan;
 
-                allSolutions = newSolutions;
-                partialResults.clear();
-            }
 
         }
 
@@ -375,7 +377,6 @@ public class Greedy {
                 tlist.add(newSeq);
                 map.put(makespan,tlist);
             }
-
         }
         //return the best sequence
         System.out.println("Greedy: best makespan: " + bestMakespan);
