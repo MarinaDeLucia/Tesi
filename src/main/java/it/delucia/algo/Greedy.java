@@ -405,6 +405,15 @@ public class Greedy {
     }
 
 
+    public void execute(List<Job> jobs) {
+        int step = 1;
+        for(Job job : jobs){
+            System.out.println("Step " + step + " : " + job.getId());
+            step++;
+        }
+    }
+
+
     public static void main(String[] args) {
         //test the method findNewBestOrder
 

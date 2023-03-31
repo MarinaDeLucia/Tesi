@@ -1,12 +1,16 @@
 package it.delucia.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import it.delucia.exceptions.DuplicateResourceException;
+
+import java.util.*;
 
 public class ModelLoader {
     private static ModelLoader instance = null;
     private List<Job> jobs = new ArrayList<>();
     private int makespanThreshold = 100;
+    private List<Resource> resources = new LinkedList<>();
+    private Map<Integer,Resource> idResourceMap = new HashMap<>();
+    private Map<Integer,Integer>  resourceQUantityMap = new HashMap<>();
 
     private int numberOfMachines = 0;
 
@@ -22,6 +26,16 @@ public class ModelLoader {
 
     public int getMakespanThreshold() {
         return makespanThreshold;
+    }
+
+    public void addResource(Resource resource) throws DuplicateResourceException {
+        if(resources.contains(resource)){
+            throw new DuplicateResourceException(resource);
+        }
+        idResourceMap.put(resource.getId(), resource);
+        resourceQUantityMap.put(resource.getId(),resource.getQuantity());
+
+
     }
 
     public void setMakespanThreshold(int makespanThreshold) {

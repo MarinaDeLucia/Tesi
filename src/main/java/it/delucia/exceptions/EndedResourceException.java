@@ -1,6 +1,6 @@
 package it.delucia.exceptions;
 
-import it.delucia.algo.Resource;
+import it.delucia.model.Resource;
 
 public class EndedResourceException extends Exception{
     public EndedResourceException(Resource resource) {

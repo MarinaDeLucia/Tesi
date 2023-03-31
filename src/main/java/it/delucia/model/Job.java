@@ -1,15 +1,16 @@
 package it.delucia.model;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 public class Job implements Comparable<Job> {
+    public static final int NO_RESOURCE = -1;
     private int id;
     private int dueDate;
     private Map<Integer, Integer> processingTimesMap; //key: machine id, value: processing time
     private int slackTime = -1; //slack time of the job
     private int processingTime = -1; //processing time of the job
+    private Map<Integer,Integer> resourceConsumptionMap; //key: resource name, value: resource quantity
 
     public Job(int id, int dueDate, Map<Integer, Integer> processingTimesMap) {
         this.id = id;
@@ -23,11 +24,43 @@ public class Job implements Comparable<Job> {
         processingMatrixToMap(processingMatrix);
     }
 
+    public Job(int id, int dueDate, int [][] processingMatrix, int [][] resourceConsumptionMatrix) {
+        this.id = id;
+        this.dueDate = dueDate;
+        processingMatrixToMap(processingMatrix);
+        resourceConsumptionMatrixToMap(resourceConsumptionMatrix);
+    }
+
+    private void resourceConsumptionMatrixToMap(int [][] resourceConsumptionMatrix){
+        resourceConsumptionMap = new java.util.HashMap<>();
+        for (int i = 0; i < resourceConsumptionMatrix.length; i++) {
+            resourceConsumptionMap.put(resourceConsumptionMatrix[i][0], resourceConsumptionMatrix[i][1]);
+        }
+    }
+
     private void processingMatrixToMap(int [][] processingMatrix){
         processingTimesMap = new java.util.HashMap<>();
         for (int i = 0; i < processingMatrix.length; i++) {
             processingTimesMap.put(processingMatrix[i][0], processingMatrix[i][1]);
         }
+    }
+
+    public Integer getConsumptionByResource(int resourceId){
+        if(resourceConsumptionMap == null){
+            return NO_RESOURCE;
+        }
+        return resourceConsumptionMap.get(resourceId);
+    }
+
+    public Integer getConsumptionByResource(Resource resource){
+        if(resourceConsumptionMap == null){
+            return NO_RESOURCE;
+        }
+        return resourceConsumptionMap.get(resource.getId());
+    }
+
+    public Map<Integer, Integer> getResourceConsumptionMap() {
+        return resourceConsumptionMap;
     }
 
     public int getId() {
