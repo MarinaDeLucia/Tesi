@@ -1,10 +1,14 @@
 package it.delucia;
 
 import it.delucia.algo.Greedy;
+import it.delucia.exceptions.DuplicateResourceException;
 import it.delucia.model.Job;
 import it.delucia.model.Machine;
 import it.delucia.model.ModelLoader;
+import it.delucia.model.Resource;
+import org.apache.commons.lang3.tuple.Pair;
 
+import java.sql.SQLOutput;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -12,13 +16,13 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Ciao Marina!");
         System.out.println("Saluti da Roma");
-        ModelLoader.getInstance().setMakespanThreshold(10);
+        ModelLoader.getInstance().setMakespanThreshold(100);
         System.out.println("[DEBUG] THRESHOLD: " + ModelLoader.getInstance().getMakespanThreshold());
 
         //create 4 jobs
-        Job job1 = new Job(1, 100, new int[][]{{1,2},{2,3},{3,3},{4,5}});
-        Job job2 = new Job(2, 100, new int[][]{{1,4},{2,7},{3,4},{4,1}});
-        Job job3 = new Job(3, 100, new int[][]{{1,1},{2,1},{3,3},{4,2}});
+        Job job1 = new Job(1, 100, new int[][]{{1, 2}, {2, 3}, {3, 3}, {4, 5}});
+        Job job2 = new Job(2, 100, new int[][]{{1, 4}, {2, 7}, {3, 4}, {4, 1}});
+        Job job3 = new Job(3, 100, new int[][]{{1, 1}, {2, 1}, {3, 3}, {4, 2}});
 
         ModelLoader.getInstance().addJob(job1);
         ModelLoader.getInstance().addJob(job2);
@@ -39,8 +43,24 @@ public class Main {
         // ----------------- GREEDY -----------------
         //init the greedy algorithm
         Greedy.getInstance().init(sortedJobs, 4);
-        Greedy.getInstance().run();
+        Pair<List<List<Job>>, Integer> solutions = Greedy.getInstance().run();
 
+        //------------ LOADING RESOURCES ------------
+        //create 3 resources
+        Resource resource1 = new Resource(1, "Carbonio", 100);
+        Resource resource2 = new Resource(2, "Oro", 100);
+        Resource resource3 = new Resource(3, "Argento", 100);
+        //adding them to the model
+        try {
+            ModelLoader.getInstance().addResource(resource1);
+            ModelLoader.getInstance().addResource(resource2);
+            ModelLoader.getInstance().addResource(resource3);
+        } catch (DuplicateResourceException e) {
+            System.out.println("[ERROR] Duplicate resource");
+            System.out.println(e.getMessage());
+        }
+
+        Greedy.getInstance().execute(solutions.getLeft().get(0));
 
 
     }

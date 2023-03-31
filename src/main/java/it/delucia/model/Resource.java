@@ -30,4 +30,14 @@ public class Resource {
     public void removeQuantity(int quantity) {
         this.quantity -= quantity;
     }
+
+    //equals method
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Resource resource = (Resource) o;
+        return id == resource.id &&
+                name.equals(resource.name);
+    }
 }

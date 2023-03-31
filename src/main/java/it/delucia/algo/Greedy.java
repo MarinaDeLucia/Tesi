@@ -4,6 +4,7 @@ import it.delucia.Settings;
 import it.delucia.model.Job;
 import it.delucia.model.Machine;
 import it.delucia.model.ModelLoader;
+import it.delucia.model.Resource;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
@@ -406,6 +407,20 @@ public class Greedy {
 
 
     public void execute(List<Job> jobs) {
+        System.out.println(" ==============================  E X E C U T I O N ============================== ");
+        //print all the resources with their quantity.
+        System.out.println("Jobs: ");
+        for (Job job : jobs) {
+            System.out.println("[JOB] "+job.getId()+" with processing time: " + job.getProcessingTime(1) + " " + job.getProcessingTime(2) + " " + job.getProcessingTime(3));
+        }
+        System.out.println("--------------------------------------");
+        System.out.println("Resources: ");
+        for (Resource resource : ModelLoader.getInstance().getResources()) {
+            System.out.println("[RESOURCE] {"+resource.getName()+"} with id "+resource.getId() + " and quantity: " + resource.getQuantity());
+        }
+        System.out.println("--------------------------------------");
+
+
         int step = 1;
         for(Job job : jobs){
             System.out.println("Step " + step + " : " + job.getId());

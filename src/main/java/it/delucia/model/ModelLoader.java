@@ -34,8 +34,13 @@ public class ModelLoader {
         }
         idResourceMap.put(resource.getId(), resource);
         resourceQUantityMap.put(resource.getId(),resource.getQuantity());
+        resources.add(resource);
 
 
+    }
+
+    public List<Resource> getResources() {
+        return resources;
     }
 
     public void setMakespanThreshold(int makespanThreshold) {
