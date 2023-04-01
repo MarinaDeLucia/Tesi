@@ -20,6 +20,9 @@ public class Greedy {
 
     private List<Job> solution = null;
 
+    public static final int ENOUGH_RESOURCE_FOR_ALL_JOBS = -1;
+    public static final int NOT_ENOUGH_RESOURCE_AT_ALL = -2;
+
     private Greedy() {
     }
 
@@ -416,17 +419,51 @@ public class Greedy {
         System.out.println("--------------------------------------");
         System.out.println("Resources: ");
         for (Resource resource : ModelLoader.getInstance().getResources()) {
-            System.out.println("[RESOURCE] {"+resource.getName()+"} with id "+resource.getId() + " and quantity: " + resource.getQuantity());
+            System.out.println("[RESOURCE] {"+resource.getName()+"}\t with id "+resource.getId() + " and quantity: " + resource.getQuantity());
         }
         System.out.println("--------------------------------------");
 
 
         int step = 1;
         for(Job job : jobs){
+            System.out.println(" >> Check if there are enough resources to execute the job ..");
+            int result = analyzeJobsByResources(jobs);
+            if(result == NOT_ENOUGH_RESOURCE_AT_ALL){
+                System.out.println(" >> Check if there are enough resources to execute the job .. [FAILED]");
+                System.out.println(" >> There are not enough resources to execute the job " + job.getId());
+                break;
+            } else if (result == ENOUGH_RESOURCE_FOR_ALL_JOBS){
+                System.out.println(" >> Check if there are enough resources to execute the job .. [OK]");
+            } else {
+
+            }
             System.out.println("Step " + step + " : " + job.getId());
             step++;
         }
     }
+
+    public int analyzeJobsByResources(List<Job> jobs){
+        //check if there are enough resources to execute the jobs
+        //list all resources available and for each resource check if there are enough resources to complete the job
+        //clone the resource quantity map and for each job subtract the processing time of the job from the resource quantity
+        Map<Integer, Integer> resourcesQuantity = new HashMap<>();
+        for(Resource resource : ModelLoader.getInstance().getResources()){
+            resourcesQuantity.put(resource.getId(), resource.getQuantity());
+        }
+        for(Resource resource : ModelLoader.getInstance().getResources()){
+            for(Job job : jobs){
+                int quantity = resourcesQuantity.get(resource.getId());
+                quantity -= job.getConsumptionByResource(resource.getId());
+                resourcesQuantity.put(resource.getId(), quantity);
+                if(quantity < 0){
+                    return job.getId() == jobs.get(0).getId() ? NOT_ENOUGH_RESOURCE_AT_ALL : job.getId();
+                }
+            }
+
+        }
+        return ENOUGH_RESOURCE_FOR_ALL_JOBS;
+    }
+
 
 
     public static void main(String[] args) {

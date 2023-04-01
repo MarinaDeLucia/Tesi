@@ -19,10 +19,34 @@ public class Main {
         ModelLoader.getInstance().setMakespanThreshold(100);
         System.out.println("[DEBUG] THRESHOLD: " + ModelLoader.getInstance().getMakespanThreshold());
 
+        //------------ LOADING RESOURCES ------------
+        //create 3 resources
+        Resource resource1 = new Resource(1, "Carbonio", 100);
+        Resource resource2 = new Resource(2, "Platino", 100);
+        Resource resource3 = new Resource(3, "Argento", 100);
+        //adding them to the model
+        try {
+            ModelLoader.getInstance().addResource(resource1);
+            ModelLoader.getInstance().addResource(resource2);
+            ModelLoader.getInstance().addResource(resource3);
+        } catch (DuplicateResourceException e) {
+            System.out.println("[ERROR] Duplicate resource");
+            System.out.println(e.getMessage());
+        }
+
         //create 4 jobs
-        Job job1 = new Job(1, 100, new int[][]{{1, 2}, {2, 3}, {3, 3}, {4, 5}});
-        Job job2 = new Job(2, 100, new int[][]{{1, 4}, {2, 7}, {3, 4}, {4, 1}});
-        Job job3 = new Job(3, 100, new int[][]{{1, 1}, {2, 1}, {3, 3}, {4, 2}});
+        Job job1 = new Job(1,
+                    100,
+                            new int[][]{{1, 2}, {2, 3}, {3, 3}, {4, 5}},
+                            new int[][]{{1, 15}, {2, 5}, {3, 34}, {4, 29}});
+        Job job2 = new Job(2,
+                    100,
+                            new int[][]{{1, 4}, {2, 7}, {3, 4}, {4, 1}},
+                            new int[][]{{1, 3}, {2, 12}, {3, 40}, {4, 12}});
+        Job job3 = new Job(3,
+                    100,
+                            new int[][]{{1, 1}, {2, 1}, {3, 3}, {4, 2}},
+                            new int[][]{{1, 49}, {2, 20}, {3, 8}, {4, 10}});
 
         ModelLoader.getInstance().addJob(job1);
         ModelLoader.getInstance().addJob(job2);
@@ -45,20 +69,6 @@ public class Main {
         Greedy.getInstance().init(sortedJobs, 4);
         Pair<List<List<Job>>, Integer> solutions = Greedy.getInstance().run();
 
-        //------------ LOADING RESOURCES ------------
-        //create 3 resources
-        Resource resource1 = new Resource(1, "Carbonio", 100);
-        Resource resource2 = new Resource(2, "Oro", 100);
-        Resource resource3 = new Resource(3, "Argento", 100);
-        //adding them to the model
-        try {
-            ModelLoader.getInstance().addResource(resource1);
-            ModelLoader.getInstance().addResource(resource2);
-            ModelLoader.getInstance().addResource(resource3);
-        } catch (DuplicateResourceException e) {
-            System.out.println("[ERROR] Duplicate resource");
-            System.out.println(e.getMessage());
-        }
 
         Greedy.getInstance().execute(solutions.getLeft().get(0));
 

@@ -11,6 +11,7 @@ public class ModelLoader {
     private List<Resource> resources = new LinkedList<>();
     private Map<Integer,Resource> idResourceMap = new HashMap<>();
     private Map<Integer,Integer>  resourceQUantityMap = new HashMap<>();
+    private Map<Integer,List<ResourceLoad>> resourceLoadMap = new HashMap<>();
 
     private int numberOfMachines = 0;
 
@@ -83,5 +84,32 @@ public class ModelLoader {
             makespan += job.getProcessingTime();
         }
         return makespan;
+    }
+
+    public void addResourceLoad(ResourceLoad resourceLoad){
+        if(resourceLoadMap.containsKey(resourceLoad.getResource().getId())){
+            resourceLoadMap.get(resourceLoad.getResource().getId()).add(resourceLoad);
+        }else{
+            List<ResourceLoad> resourceLoads = new ArrayList<>();
+            resourceLoads.add(resourceLoad);
+            resourceLoadMap.put(resourceLoad.getResource().getId(),resourceLoads);
+        }
+    }
+
+    public List<ResourceLoad> getResourceLoad(Resource resource){
+        return resourceLoadMap.get(resource.getId());
+    }
+
+    public int getResourceQuantity(Resource resource){
+        return resourceQUantityMap.get(resource.getId());
+    }
+
+    public Resource getResourceById(int id){
+        return idResourceMap.get(id);
+    }
+
+    //get resource load by resource-id
+    public List<ResourceLoad> getResourceLoad(int resourceId){
+        return resourceLoadMap.get(resourceId);
     }
 }
