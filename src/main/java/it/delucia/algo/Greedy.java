@@ -425,21 +425,38 @@ public class Greedy {
 
 
         int step = 1;
-        for(Job job : jobs){
-            System.out.println(" >> Check if there are enough resources to execute the job ..");
+        List<Job> backlog = new LinkedList<>(); //list of jobs that cant be done because there are not enough resources
+        while(ModelLoader.getInstance().hasNothingTodo()){
+            System.out.println("**********************************************************");
+            System.out.println("Step " + step + ": ");
+            System.out.println("**********************************************************");
+            //check if there are enough resource to complete the first job
+            Job nextOne = null;
             int result = analyzeJobsByResources(jobs);
             if(result == NOT_ENOUGH_RESOURCE_AT_ALL){
-                System.out.println(" >> Check if there are enough resources to execute the job .. [FAILED]");
-                System.out.println(" >> There are not enough resources to execute the job " + job.getId());
-                break;
-            } else if (result == ENOUGH_RESOURCE_FOR_ALL_JOBS){
-                System.out.println(" >> Check if there are enough resources to execute the job .. [OK]");
-            } else {
+                System.out.println("There are not enough resources to complete the first job");
+                //copy all jobs into backlog in the same order and clear the jobs list
+                backlog.addAll(jobs);
+                jobs.clear();
+                return;
+            }else{
+                //the result represent the id of the first job that has to go to the backlog
 
             }
-            System.out.println("Step " + step + " : " + job.getId());
+            //execute the first job
+
+            for (Job job : jobs) {
+                System.out.println("Executing job with id: " + job.getId());
+                //job.execute();
+                System.out.println("Job with id: " + job.getId() + " completed");
+                System.out.println("--------------------------------------");
+            }
             step++;
         }
+
+
+
+
     }
 
     public int analyzeJobsByResources(List<Job> jobs){
@@ -459,7 +476,6 @@ public class Greedy {
                     return job.getId() == jobs.get(0).getId() ? NOT_ENOUGH_RESOURCE_AT_ALL : job.getId();
                 }
             }
-
         }
         return ENOUGH_RESOURCE_FOR_ALL_JOBS;
     }

@@ -1,6 +1,8 @@
 package it.delucia.model;
 
 import it.delucia.exceptions.DuplicateResourceException;
+import it.delucia.model.events.JobArrival;
+import it.delucia.model.events.ResourceLoad;
 
 import java.util.*;
 
@@ -12,6 +14,7 @@ public class ModelLoader {
     private Map<Integer,Resource> idResourceMap = new HashMap<>();
     private Map<Integer,Integer>  resourceQUantityMap = new HashMap<>();
     private Map<Integer,List<ResourceLoad>> resourceLoadMap = new HashMap<>();
+    private Map<Integer,List<JobArrival>>   jobArrivalMap = new HashMap<>();
 
     private int numberOfMachines = 0;
 
@@ -111,5 +114,27 @@ public class ModelLoader {
     //get resource load by resource-id
     public List<ResourceLoad> getResourceLoad(int resourceId){
         return resourceLoadMap.get(resourceId);
+    }
+
+    public void addJobArrival(JobArrival jobArrival, int atStep){
+        if(jobArrivalMap.containsKey(atStep)){
+            jobArrivalMap.get(atStep).add(jobArrival);
+        }else{
+            List<JobArrival> jobArrivals = new ArrayList<>();
+            jobArrivals.add(jobArrival);
+            jobArrivalMap.put(atStep,jobArrivals);
+        }
+    }
+
+    public List<JobArrival> getJobArrivalByStep(int atStep){
+        return jobArrivalMap.get(atStep);
+    }
+
+    /**
+     * return true when there is no more jobs in plan be processed
+     * @return
+     */
+    public boolean hasNothingTodo() {
+        return this.jobArrivalMap.isEmpty() && this.jobs.isEmpty();
     }
 }

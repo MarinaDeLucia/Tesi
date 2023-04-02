@@ -1,14 +1,15 @@
-package it.delucia.model;
+package it.delucia.model.events;
 
-public class ResourceLoad {
+import it.delucia.model.Resource;
+
+public class ResourceLoad extends Event{
     private Resource resource;
     private int quantity;
-    private int step;
 
     public ResourceLoad(Resource resource, int quantity, int step) {
+        super(step);
         this.resource = resource;
         this.quantity = quantity;
-        this.step = step;
     }
 
 
@@ -20,9 +21,6 @@ public class ResourceLoad {
         return quantity;
     }
 
-    public int getStep() {
-        return step;
-    }
 
     //equals
     @Override
@@ -31,7 +29,7 @@ public class ResourceLoad {
         if (o == null || getClass() != o.getClass()) return false;
         ResourceLoad that = (ResourceLoad) o;
         return quantity == that.quantity &&
-                step == that.step &&
+                this.getStep() == that.getStep() &&
                 resource.equals(that.resource);
     }
 
