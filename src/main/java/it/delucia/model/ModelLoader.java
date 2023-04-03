@@ -116,7 +116,8 @@ public class ModelLoader {
         return resourceLoadMap.get(resourceId);
     }
 
-    public void addJobArrival(JobArrival jobArrival, int atStep){
+    public void addJobArrival(JobArrival jobArrival){
+        int atStep = jobArrival.getStep();
         if(jobArrivalMapByStep.containsKey(atStep)){
             jobArrivalMapByStep.get(atStep).add(jobArrival);
         }else{
@@ -144,6 +145,10 @@ public class ModelLoader {
 
     public void addJobs(List<Job> list) {
         this.jobs.addAll(list);
+    }
+
+    public void clearJobArrivalStep(int step){
+        this.jobArrivalMapByStep.remove(step);
     }
 
 

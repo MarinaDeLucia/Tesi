@@ -448,22 +448,29 @@ public class Greedy {
 
             if(isDirtyBacklog()){
                 System.out.println(" -------------------- DIRTY BACKLOG -------------------- ");
-                List<JobArrival> jobArrivalByStep = ModelLoader.getInstance().getJobArrivalByStep(step);
-                jobs.addAll(jobArrivalByStep.stream().map(JobArrival::getJob).toList());
-                //add all new jobs to modelLoader
-                ModelLoader.getInstance().addJobs(jobArrivalByStep.stream().map(JobArrival::getJob).toList());
+                List<JobArrival> jobArrivalByStep = ModelLoader.getInstance().getJobArrivalByStep(step-1);
+                if(jobArrivalByStep!=null){
+                    System.out.println(" << im going to process a job arrival:");
+                    jobs.addAll(jobArrivalByStep.stream().map(JobArrival::getJob).toList());
+                    //add all new jobs to modelLoader
+                    ModelLoader.getInstance().addJobs(jobArrivalByStep.stream().map(JobArrival::getJob).toList());
 
-                // ----------------- GREEDY -----------------
-                //init the greedy algorithm
-                this.jobs = ModelLoader.getInstance().getSortedJobs();
-                Pair<List<List<Job>>, Integer> solutions = Greedy.getInstance().run();
-                //extract the new order by the solution
-                this.jobs = solutions.getLeft().get(0);
+                    // ----------------- GREEDY -----------------
+                    //init the greedy algorithm
+                    this.jobs = ModelLoader.getInstance().getSortedJobs();
+                    Pair<List<List<Job>>, Integer> solutions = Greedy.getInstance().run();
+                    //extract the new order by the solution
+                    this.jobs = solutions.getLeft().get(0);
+                    jobs = this.jobs;
 
 
-                System.out.println(" -------------------- CLEAN BACKLOG -------------------- ");
+                    System.out.println(" -------------------- CLEAN BACKLOG -------------------- ");
+                    ModelLoader.getInstance().clearJobArrivalStep(step-1);
+                    dirtyBacklog = false;
 
-                dirtyBacklog = false;
+                }
+
+
             }
 
 
@@ -507,6 +514,7 @@ public class Greedy {
                     jobs.add(job);
                     ModelLoader.getInstance().addJob(job);
                 }
+                System.out.println("WARNING, at the step "+step+" there is a Job Arrival !");
                 this.dirtyBacklog = true;
             }
 

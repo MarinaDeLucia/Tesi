@@ -6,6 +6,7 @@ import it.delucia.model.Job;
 import it.delucia.model.Machine;
 import it.delucia.model.ModelLoader;
 import it.delucia.model.Resource;
+import it.delucia.model.events.JobArrival;
 import it.delucia.model.events.ResourceLoad;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -57,6 +58,15 @@ public class Main {
         ModelLoader.getInstance().addResourceLoad(new ResourceLoad(resource1, 1, 3));
         ModelLoader.getInstance().addResourceLoad(new ResourceLoad(resource1, 10, 7));
         ModelLoader.getInstance().addResourceLoad(new ResourceLoad(resource1, 50, 9));
+
+        //create job4
+        Job job4 = new Job(4,
+                    100,
+                            new int[][]{{1, 1}, {2, 6}, {3, 3}, {4, 2}},
+                            new int[][]{{1, 4}, {2, 7}, {3, 9}});
+        //adding a job arrival at step 2
+        ModelLoader.getInstance().addJobArrival(new JobArrival(job4, 2));
+
 
 
         System.out.println(" MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM 1    Model Jobs size: "+ModelLoader.getInstance().getJobs().size());
