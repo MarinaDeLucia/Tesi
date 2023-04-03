@@ -14,7 +14,7 @@ public class ModelLoader {
     private Map<Integer,Resource> idResourceMap = new HashMap<>();
     private Map<Integer,Integer>  resourceQUantityMap = new HashMap<>();
     private Map<Integer,List<ResourceLoad>> resourceLoadMap = new HashMap<>();
-    private Map<Integer,List<JobArrival>>   jobArrivalMap = new HashMap<>();
+    private Map<Integer,List<JobArrival>>   jobArrivalMapByStep = new HashMap<>();
 
     private int numberOfMachines = 0;
 
@@ -117,17 +117,17 @@ public class ModelLoader {
     }
 
     public void addJobArrival(JobArrival jobArrival, int atStep){
-        if(jobArrivalMap.containsKey(atStep)){
-            jobArrivalMap.get(atStep).add(jobArrival);
+        if(jobArrivalMapByStep.containsKey(atStep)){
+            jobArrivalMapByStep.get(atStep).add(jobArrival);
         }else{
             List<JobArrival> jobArrivals = new ArrayList<>();
             jobArrivals.add(jobArrival);
-            jobArrivalMap.put(atStep,jobArrivals);
+            jobArrivalMapByStep.put(atStep,jobArrivals);
         }
     }
 
     public List<JobArrival> getJobArrivalByStep(int atStep){
-        return jobArrivalMap.get(atStep);
+        return jobArrivalMapByStep.get(atStep);
     }
 
     /**
@@ -135,6 +135,14 @@ public class ModelLoader {
      * @return
      */
     public boolean hasNothingTodo() {
-        return this.jobArrivalMap.isEmpty() && this.jobs.isEmpty();
+        return this.jobArrivalMapByStep.isEmpty() && this.jobs.isEmpty();
+    }
+
+    public void removeJob(Job job) {
+        this.jobs.remove(job);
+    }
+
+    public void addJobs(List<Job> list) {
+        this.jobs.addAll(list);
     }
 }

@@ -38,19 +38,21 @@ public class Main {
         Job job1 = new Job(1,
                     100,
                             new int[][]{{1, 2}, {2, 3}, {3, 3}, {4, 5}},
-                            new int[][]{{1, 15}, {2, 5}, {3, 34}, {4, 29}});
+                            new int[][]{{1, 15}, {2, 5}, {3, 34}});
         Job job2 = new Job(2,
                     100,
                             new int[][]{{1, 4}, {2, 7}, {3, 4}, {4, 1}},
-                            new int[][]{{1, 3}, {2, 12}, {3, 40}, {4, 12}});
+                            new int[][]{{1, 3}, {2, 12}, {3, 40}});
         Job job3 = new Job(3,
                     100,
                             new int[][]{{1, 1}, {2, 1}, {3, 3}, {4, 2}},
-                            new int[][]{{1, 49}, {2, 20}, {3, 8}, {4, 10}});
+                            new int[][]{{1, 49}, {2, 20}, {3, 8}});
 
         ModelLoader.getInstance().addJob(job1);
         ModelLoader.getInstance().addJob(job2);
         ModelLoader.getInstance().addJob(job3);
+
+        System.out.println(" MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM 1    Model Jobs size: "+ModelLoader.getInstance().getJobs().size());
 
         //get sorted list of jobs
         List<Job> sortedJobs = ModelLoader.getInstance().getSortedJobs();
@@ -66,8 +68,11 @@ public class Main {
 
         // ----------------- GREEDY -----------------
         //init the greedy algorithm
+        System.out.println(" MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM 2    Model Jobs size: "+ModelLoader.getInstance().getJobs().size());
         Greedy.getInstance().init(sortedJobs, 4);
+        System.out.println(" MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM 3  Model Jobs size: "+ModelLoader.getInstance().getJobs().size());
         Pair<List<List<Job>>, Integer> solutions = Greedy.getInstance().run();
+        System.out.println(" MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM  4   Model Jobs size: "+ModelLoader.getInstance().getJobs().size());
 
 
         Greedy.getInstance().execute(solutions.getLeft().get(0));

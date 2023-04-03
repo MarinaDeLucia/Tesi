@@ -5,6 +5,8 @@ import it.delucia.model.Job;
 import it.delucia.model.Machine;
 import it.delucia.model.ModelLoader;
 import it.delucia.model.Resource;
+import it.delucia.model.events.JobArrival;
+import it.delucia.model.events.ResourceLoad;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
@@ -22,6 +24,7 @@ public class Greedy {
 
     public static final int ENOUGH_RESOURCE_FOR_ALL_JOBS = -1;
     public static final int NOT_ENOUGH_RESOURCE_AT_ALL = -2;
+    private boolean dirtyBacklog = false; //true if there is some new job to be processed
 
     private Greedy() {
     }
@@ -193,6 +196,13 @@ public class Greedy {
             i++;
             System.out.println("------------------------------------------------------------------------");
         }
+
+        //fix the jobs in ModelLoaer:
+        ModelLoader.getInstance().getJobs().clear();
+        for(Job job : allSolutions.get(0)){
+            ModelLoader.getInstance().getJobs().add(job);
+        }
+
         //return all the minimal solutions according to the method signature
         return Pair.of(allSolutions, currentBestMakespan);
     }
@@ -410,6 +420,7 @@ public class Greedy {
 
 
     public void execute(List<Job> jobs) {
+        this.jobs = jobs;
         System.out.println(" ==============================  E X E C U T I O N ============================== ");
         //print all the resources with their quantity.
         System.out.println("Jobs: ");
@@ -424,39 +435,95 @@ public class Greedy {
         System.out.println("--------------------------------------");
 
 
+        System.out.println("Check before execution: ");
+        //print size of jobs of modelloader
+        System.out.println("Jobs in modelLoader: " + ModelLoader.getInstance().getJobs().size());
+        //print all jobs
         int step = 1;
-        List<Job> backlog = new LinkedList<>(); //list of jobs that cant be done because there are not enough resources
-        while(ModelLoader.getInstance().hasNothingTodo()){
+//        List<Job> backlog = new LinkedList<>(); //list of jobs that cant be done because there are not enough resources
+        while(!ModelLoader.getInstance().hasNothingTodo() && step < Settings.MAX_STEP){
             System.out.println("**********************************************************");
             System.out.println("Step " + step + ": ");
             System.out.println("**********************************************************");
+
+            if(isDirtyBacklog()){
+                System.out.println(" -------------------- DIRTY BACKLOG -------------------- ");
+                List<JobArrival> jobArrivalByStep = ModelLoader.getInstance().getJobArrivalByStep(step);
+                jobs.addAll(jobArrivalByStep.stream().map(JobArrival::getJob).toList());
+                //add all new jobs to modelLoader
+                ModelLoader.getInstance().addJobs(jobArrivalByStep.stream().map(JobArrival::getJob).toList());
+
+                // ----------------- GREEDY -----------------
+                //init the greedy algorithm
+                this.jobs = ModelLoader.getInstance().getSortedJobs();
+                Pair<List<List<Job>>, Integer> solutions = Greedy.getInstance().run();
+                //extract the new order by the solution
+                this.jobs = solutions.getLeft().get(0);
+
+
+                System.out.println(" -------------------- CLEAN BACKLOG -------------------- ");
+
+                dirtyBacklog = false;
+            }
+
+
             //check if there are enough resource to complete the first job
-            Job nextOne = null;
             int result = analyzeJobsByResources(jobs);
-            if(result == NOT_ENOUGH_RESOURCE_AT_ALL){
-                System.out.println("There are not enough resources to complete the first job");
-                //copy all jobs into backlog in the same order and clear the jobs list
-                backlog.addAll(jobs);
-                jobs.clear();
-                return;
-            }else{
+            if(result != NOT_ENOUGH_RESOURCE_AT_ALL){
                 //the result represent the id of the first job that has to go to the backlog
-
+                process(jobs.get(0));
             }
-            //execute the first job
-
-            for (Job job : jobs) {
-                System.out.println("Executing job with id: " + job.getId());
-                //job.execute();
-                System.out.println("Job with id: " + job.getId() + " completed");
-                System.out.println("--------------------------------------");
+            //check if there is some new load of resource at this step and update the resources amount
+            for(Resource resource : ModelLoader.getInstance().getResources()){
+                //find resource load by resource id, and then filter it by step by using java stream
+                final int s = step;
+                List<ResourceLoad> resourceLoad = ModelLoader.getInstance().getResourceLoad(resource);
+                if (resourceLoad == null) {
+                    continue;
+                }
+                int quantityAtThisStep = resourceLoad
+                        .stream()
+                        .filter(r -> r!= null && r.getStep() == s)
+                        .mapToInt(ResourceLoad::getQuantity)
+                        .sum();
+                resource.addQuantity(quantityAtThisStep);
             }
+
+            //check if there is some new JobArrival in model for this step. If so, get those and move them into the
+            //job list and set the dirtyjob flag to true
+            List<JobArrival> jobArrivalByStep = ModelLoader.getInstance().getJobArrivalByStep(step);
+            if(jobArrivalByStep!= null && !jobArrivalByStep.isEmpty()){
+                for(JobArrival jobArrival : jobArrivalByStep){
+                    Job job = jobArrival.getJob();
+                    jobs.add(job);
+                    ModelLoader.getInstance().addJob(job);
+                }
+                this.dirtyBacklog = true;
+            }
+
             step++;
         }
+        System.out.println("Finished at step: " + step);
+        System.out.println(ModelLoader.getInstance().getJobs().size());
+        System.out.println("-----------------------------------");
+    }
+
+    public boolean isDirtyBacklog(){
+        return this.dirtyBacklog;
+    }
 
 
-
-
+    public void process(Job job){
+        System.out.println("Process job " + job.getId());
+        //update the resources quantity
+        for(Resource resource : ModelLoader.getInstance().getResources()){
+            Integer consumptionByResource = job.getConsumptionByResource(resource.getId());
+            System.out.println("Job: "+job.getId()+" consume "+consumptionByResource+" of resource "+resource.getName());
+            resource.removeQuantity(consumptionByResource);
+        }
+        //remove job from the jobs list
+        ModelLoader.getInstance().removeJob(job);
+        this.jobs.remove(job);
     }
 
     public int analyzeJobsByResources(List<Job> jobs){
