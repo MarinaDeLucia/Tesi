@@ -6,6 +6,7 @@ import it.delucia.model.Job;
 import it.delucia.model.Machine;
 import it.delucia.model.ModelLoader;
 import it.delucia.model.Resource;
+import it.delucia.model.events.ResourceLoad;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.sql.SQLOutput;
@@ -21,7 +22,7 @@ public class Main {
 
         //------------ LOADING RESOURCES ------------
         //create 3 resources
-        Resource resource1 = new Resource(1, "Carbonio", 100);
+        Resource resource1 = new Resource(1, "Carbonio", 16);
         Resource resource2 = new Resource(2, "Platino", 100);
         Resource resource3 = new Resource(3, "Argento", 100);
         //adding them to the model
@@ -51,6 +52,12 @@ public class Main {
         ModelLoader.getInstance().addJob(job1);
         ModelLoader.getInstance().addJob(job2);
         ModelLoader.getInstance().addJob(job3);
+
+        //adding a list of some resourceLoad events
+        ModelLoader.getInstance().addResourceLoad(new ResourceLoad(resource1, 1, 3));
+        ModelLoader.getInstance().addResourceLoad(new ResourceLoad(resource1, 10, 7));
+        ModelLoader.getInstance().addResourceLoad(new ResourceLoad(resource1, 50, 9));
+
 
         System.out.println(" MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM 1    Model Jobs size: "+ModelLoader.getInstance().getJobs().size());
 

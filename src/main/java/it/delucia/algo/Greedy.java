@@ -472,6 +472,8 @@ public class Greedy {
             if(result != NOT_ENOUGH_RESOURCE_AT_ALL){
                 //the result represent the id of the first job that has to go to the backlog
                 process(jobs.get(0));
+            }else{
+                System.out.println("There are not enough resources to complete the next job");
             }
             //check if there is some new load of resource at this step and update the resources amount
             for(Resource resource : ModelLoader.getInstance().getResources()){
@@ -481,11 +483,18 @@ public class Greedy {
                 if (resourceLoad == null) {
                     continue;
                 }
-                int quantityAtThisStep = resourceLoad
-                        .stream()
-                        .filter(r -> r!= null && r.getStep() == s)
-                        .mapToInt(ResourceLoad::getQuantity)
-                        .sum();
+                for(ResourceLoad rl : resourceLoad){
+                    System.out.println("ResourceLoad: " + rl.getResource().getName() + " at step " + rl.getStep() + " has the quantity " + rl.getQuantity());
+                }
+                int quantityAtThisStep = 0;
+                for(ResourceLoad rl : resourceLoad){
+                    if(rl.getStep() == step){
+                        quantityAtThisStep += rl.getQuantity();
+                        //ModelLoader.getInstance().depleteResourceLoad(rl);
+                    }
+                }
+
+                System.out.println(">> Total quantity to add to resource " + resource.getName() + " is " + quantityAtThisStep + " at step " + step + "");
                 resource.addQuantity(quantityAtThisStep);
             }
 
