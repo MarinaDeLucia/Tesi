@@ -451,7 +451,7 @@ public class Greedy {
                 List<JobArrival> jobArrivalByStep = ModelLoader.getInstance().getJobArrivalByStep(step-1);
                 if(jobArrivalByStep!=null){
                     System.out.println(" << im going to process a job arrival:");
-                    jobs.addAll(jobArrivalByStep.stream().map(JobArrival::getJob).toList());
+                    //jobs.addAll(jobArrivalByStep.stream().map(JobArrival::getJob).toList());
                     //add all new jobs to modelLoader
                     ModelLoader.getInstance().addJobs(jobArrivalByStep.stream().map(JobArrival::getJob).toList());
 

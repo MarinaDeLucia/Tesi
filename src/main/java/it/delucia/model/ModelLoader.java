@@ -145,6 +145,15 @@ public class ModelLoader {
 
     public void addJobs(List<Job> list) {
         this.jobs.addAll(list);
+        //check if there are two or more jobs with same id, and in case throw an exception
+        Set<Integer> ids = new HashSet<>();
+        for(Job job : list){
+            if(ids.contains(job.getId())){
+                System.out.println("ERROR DUPLICATE ");
+                throw new RuntimeException("Duplicate job id: "+job.getId());
+            }
+            ids.add(job.getId());
+        }
     }
 
     public void clearJobArrivalStep(int step){
