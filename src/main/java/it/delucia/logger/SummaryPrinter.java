@@ -1,6 +1,7 @@
 package it.delucia.logger;
 
 import it.delucia.Settings;
+import it.delucia.model.Job;
 import it.delucia.model.ModelLoader;
 import it.delucia.model.Resource;
 import it.delucia.model.events.JobArrival;
@@ -82,7 +83,20 @@ public class SummaryPrinter {
         }
         sb.append("\n");
         sb.append("JOB DETAILS:").append("\n");
-        ModelLoader.getInstance().getJobs().forEach(j -> sb.append("  - ").append(j.toString()).append("\n"));
+        //for each job print the job and the resources it consumes in the following format: (the value of the consumption is the quantity with - sign)
+        //[J1] which consumes [resource1] -10, [resource2] -5, [resource3] -2
+        for(Job job : ModelLoader.getInstance().getJobs()){
+            sb.append("  - [").append(job.printId()).append("] which consumes ");
+            for(Resource r : ModelLoader.getInstance().getResources()){
+                int quantity = job.getConsumptionByResource(r);
+                if(quantity != 0){
+                    sb.append("[").append(r.getName()).append("] -");
+                    sb.append(quantity).append(",\t ");
+                }
+            }
+            sb.append("\n");
+        }
+
         sb.append("\n");
         sb.append("NEW JOBS ARRIVAL DETAILS:").append("\n");
         Map<Integer, List<JobArrival>> jobArrivalMapByStep = ModelLoader.getInstance().getJobArrivalMapByStep();
@@ -101,21 +115,14 @@ public class SummaryPrinter {
                 for(Resource r : ModelLoader.getInstance().getResources()){
                     int quantity = ja.getJob().getConsumptionByResource(r);
                     if(quantity != 0){
-                        sb.append("[").append(r.getName()).append("] ");
-                        if(quantity > 0){
-                            sb.append("+");
-                        }
+                        sb.append("[").append(r.getName()).append("] -");
                         sb.append(quantity).append(", ");
                     }
                 }
                 sb.append("\n");
             }
         }
-
-
-
         SummaryLogger.getInstance().append(sb.toString());
-
     }
 
 
@@ -152,4 +159,12 @@ public class SummaryPrinter {
         SummaryLogger.getInstance().append("[ERROR] " + message);
     }
 
+
+    public void printStartBanner(){
+        StringBuilder sb = new StringBuilder();
+        sb.append(separator).append("\n\n");
+        sb.append("                  S T A R T I N G   E X E C U T I O N").append("\n\n");
+        sb.append(separator).append("\n");
+        SummaryLogger.getInstance().append(sb.toString());
+    }
 }

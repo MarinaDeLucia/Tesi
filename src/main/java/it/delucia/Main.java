@@ -69,6 +69,7 @@ public class Main {
         ModelLoader.getInstance().addJobArrival(new JobArrival(job4, 2));
 
         SummaryPrinter.getInstance().printInitialPlan();
+        SummaryPrinter.getInstance().printStartBanner();
 
         //get sorted list of jobs
         List<Job> sortedJobs = ModelLoader.getInstance().getSortedJobs();
