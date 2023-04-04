@@ -105,7 +105,7 @@ public class Job implements Comparable<Job> {
 
     @Override
     public String toString() {
-        return "Job{" + "id=" + id + ", dueDate=" + dueDate + ", processingTime=" + processingTime + '}';
+        return "Job{" + "id=" + id + ", dueDate=" + dueDate + ", processingTime=" + getProcessingTime() + '}';
     }
 
     public String printId(){

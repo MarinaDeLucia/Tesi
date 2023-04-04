@@ -40,4 +40,13 @@ public class Resource {
         return id == resource.id &&
                 name.equals(resource.name);
     }
+
+    @Override
+    public String toString() {
+        return "Resource{" +
+                "name='" + name + '\'' +
+                ", quantity=" + quantity +
+                ", id=" + id +
+                '}';
+    }
 }

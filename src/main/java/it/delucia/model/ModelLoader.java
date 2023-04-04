@@ -28,6 +28,10 @@ public class ModelLoader {
         return instance;
     }
 
+    public Map<Integer, Integer> getResourceQUantityMap() {
+        return resourceQUantityMap;
+    }
+
     public int getMakespanThreshold() {
         return makespanThreshold;
     }
@@ -131,6 +135,10 @@ public class ModelLoader {
         return jobArrivalMapByStep.get(atStep);
     }
 
+    public Map<Integer, List<JobArrival>> getJobArrivalMapByStep() {
+        return jobArrivalMapByStep;
+    }
+
     /**
      * return true when there is no more jobs in plan be processed
      * @return
@@ -158,6 +166,37 @@ public class ModelLoader {
 
     public void clearJobArrivalStep(int step){
         this.jobArrivalMapByStep.remove(step);
+    }
+
+
+    //return the total number of arrival job in the plan
+    public int getNumberOfExtraJobs() {
+        int total = 0;
+        for(List<JobArrival> jobArrivals : jobArrivalMapByStep.values()){
+            total += jobArrivals.size();
+        }
+        return total;
+    }
+
+    //returns a map with the step as key and the list of ResourceLoad as value
+    public Map<Integer,List<ResourceLoad>> getResourceLoadMapByStep(){
+        Map<Integer,List<ResourceLoad>> result = new HashMap<>();
+        for (Resource resource : resources) {
+            List<ResourceLoad> resourceLoads = this.resourceLoadMap.get(resource.getId());
+            if(resourceLoads != null){
+                for (ResourceLoad resourceLoad : resourceLoads) {
+                    int step = resourceLoad.getStep();
+                    if(result.containsKey(step)){
+                        result.get(step).add(resourceLoad);
+                    }else{
+                        List<ResourceLoad> resourceLoads1 = new ArrayList<>();
+                        resourceLoads1.add(resourceLoad);
+                        result.put(step,resourceLoads1);
+                    }
+                }
+            }
+        }
+        return result;
     }
 
 

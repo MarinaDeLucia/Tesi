@@ -17,8 +17,6 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Ciao Marina!");
-        System.out.println("Saluti da Roma");
         ModelLoader.getInstance().setMakespanThreshold(100);
         System.out.println("[DEBUG] THRESHOLD: " + ModelLoader.getInstance().getMakespanThreshold());
 
@@ -69,6 +67,8 @@ public class Main {
                             new int[][]{{1, 4}, {2, 7}, {3, 9}});
         //adding a job arrival at step 2
         ModelLoader.getInstance().addJobArrival(new JobArrival(job4, 2));
+
+        SummaryPrinter.getInstance().printInitialPlan();
 
         //get sorted list of jobs
         List<Job> sortedJobs = ModelLoader.getInstance().getSortedJobs();
