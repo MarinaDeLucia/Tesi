@@ -82,6 +82,7 @@ public class Main {
         //print overall makespan
         int makespan = ModelLoader.getInstance().getMakespan();
         System.out.println("Overall makespan: " + makespan);
+        System.out.println("ok");
 
         // ----------------- GREEDY -----------------
         //init the greedy algorithm
