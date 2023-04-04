@@ -2,6 +2,7 @@ package it.delucia;
 
 import it.delucia.algo.Greedy;
 import it.delucia.exceptions.DuplicateResourceException;
+import it.delucia.logger.SummaryPrinter;
 import it.delucia.model.Job;
 import it.delucia.model.Machine;
 import it.delucia.model.ModelLoader;
@@ -20,6 +21,8 @@ public class Main {
         System.out.println("Saluti da Roma");
         ModelLoader.getInstance().setMakespanThreshold(100);
         System.out.println("[DEBUG] THRESHOLD: " + ModelLoader.getInstance().getMakespanThreshold());
+
+        SummaryPrinter.getInstance().start("experiment_3j3m");
 
         //------------ LOADING RESOURCES ------------
         //create 3 resources
@@ -87,6 +90,8 @@ public class Main {
 
         Greedy.getInstance().execute(solutions.getLeft().get(0));
 
+        //end summary
+        SummaryPrinter.getInstance().end();
 
     }
 }
