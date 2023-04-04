@@ -451,10 +451,11 @@ public class Greedy {
                 List<JobArrival> jobArrivalByStep = ModelLoader.getInstance().getJobArrivalByStep(step-1);
                 if(jobArrivalByStep!=null){
                     System.out.println(" << im going to process a job arrival:");
-                    System.out.println("test automation 4");
                     //jobs.addAll(jobArrivalByStep.stream().map(JobArrival::getJob).toList());
                     //add all new jobs to modelLoader
+                    System.out.println("BEFORE - WARNING -> model loader jobs size: "+ModelLoader.getInstance().getJobs().size());
                     ModelLoader.getInstance().addJobs(jobArrivalByStep.stream().map(JobArrival::getJob).toList());
+                    System.out.println("AFTER - WARNING -> model loader jobs size: "+ModelLoader.getInstance().getJobs().size());
 
                     // ----------------- GREEDY -----------------
                     //init the greedy algorithm
@@ -464,16 +465,12 @@ public class Greedy {
                     this.jobs = solutions.getLeft().get(0);
                     jobs = this.jobs;
 
-
                     System.out.println(" -------------------- CLEAN BACKLOG -------------------- ");
                     ModelLoader.getInstance().clearJobArrivalStep(step-1);
                     dirtyBacklog = false;
 
                 }
-
-
             }
-
 
             //check if there are enough resource to complete the first job
             int result = analyzeJobsByResources(jobs);
@@ -510,11 +507,6 @@ public class Greedy {
             //job list and set the dirtyjob flag to true
             List<JobArrival> jobArrivalByStep = ModelLoader.getInstance().getJobArrivalByStep(step);
             if(jobArrivalByStep!= null && !jobArrivalByStep.isEmpty()){
-                for(JobArrival jobArrival : jobArrivalByStep){
-                    Job job = jobArrival.getJob();
-                    jobs.add(job);
-                    ModelLoader.getInstance().addJob(job);
-                }
                 System.out.println("WARNING, at the step "+step+" there is a Job Arrival !");
                 this.dirtyBacklog = true;
             }

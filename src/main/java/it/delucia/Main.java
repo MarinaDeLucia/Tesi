@@ -23,7 +23,7 @@ public class Main {
 
         //------------ LOADING RESOURCES ------------
         //create 3 resources
-        Resource resource1 = new Resource(1, "Carbonio", 16);
+        Resource resource1 = new Resource(1, "Carbonio", 50);
         Resource resource2 = new Resource(2, "Platino", 100);
         Resource resource3 = new Resource(3, "Argento", 100);
         //adding them to the model
@@ -67,10 +67,6 @@ public class Main {
         //adding a job arrival at step 2
         ModelLoader.getInstance().addJobArrival(new JobArrival(job4, 2));
 
-
-
-        System.out.println(" MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM 1    Model Jobs size: "+ModelLoader.getInstance().getJobs().size());
-
         //get sorted list of jobs
         List<Job> sortedJobs = ModelLoader.getInstance().getSortedJobs();
 
@@ -85,11 +81,8 @@ public class Main {
 
         // ----------------- GREEDY -----------------
         //init the greedy algorithm
-        System.out.println(" MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM 2    Model Jobs size: "+ModelLoader.getInstance().getJobs().size());
         Greedy.getInstance().init(sortedJobs, 4);
-        System.out.println(" MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM 3  Model Jobs size: "+ModelLoader.getInstance().getJobs().size());
         Pair<List<List<Job>>, Integer> solutions = Greedy.getInstance().run();
-        System.out.println(" MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM  4   Model Jobs size: "+ModelLoader.getInstance().getJobs().size());
 
 
         Greedy.getInstance().execute(solutions.getLeft().get(0));
