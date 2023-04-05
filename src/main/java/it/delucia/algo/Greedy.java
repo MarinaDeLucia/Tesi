@@ -71,6 +71,17 @@ public class Greedy {
             throw new RuntimeException("Greedy not initialized");
         }
         Pair<Job, Job> extractedJobs = destruction();
+        if(extractedJobs == null){
+            System.out.println("WARNING: No jobs extracted from destruction phase. Returning the first job in the list");
+            //return Pair.of(List.of(List.of(jobs.get(0))), jobs.get(0).getProcessingTime());
+            //return the same thing of the line above without using List.of
+            List<List<Job>> list = new LinkedList<>();
+            List<Job> list2 = new LinkedList<>();
+            list2.add(jobs.get(0));
+            list.add(list2);
+            return Pair.of(list, jobs.get(0).getProcessingTime());
+
+        }
         //stampa i due job estratti dalla fase di distruzione:
         System.out.println("-------------------------- EXTRACTED JOBS FROM DESTRUCTION PHASE --------------------------");
         System.out.println(">> Greedy: Extracted Job1: " + extractedJobs.getLeft());
@@ -244,7 +255,8 @@ public class Greedy {
 
         //if size of the list is <= 2 then throw an exception
         if (jobs.size() <= 2) {
-            throw new RuntimeException("Greedy: jobs list size is <= 2");
+            System.out.println("WARNING: the list of jobs is with just one element");
+            return null;
         }
         //extract the first two jobs
         Job job_extracted_1 = this.jobs.remove(0);
@@ -476,7 +488,9 @@ public class Greedy {
             int result = analyzeJobsByResources(jobs);
             if(result != NOT_ENOUGH_RESOURCE_AT_ALL){
                 //the result represent the id of the first job that has to go to the backlog
-                process(jobs.get(0));
+                if(!jobs.isEmpty()) {
+                    process(jobs.get(0));
+                }
             }else{
                 System.out.println("There are not enough resources to complete the next job");
                 //check all jobs, and see if there is a job that can be completed with the current resources

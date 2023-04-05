@@ -25,8 +25,8 @@ public class Main {
         //------------ LOADING RESOURCES ------------
         //create 3 resources
         Resource resource1 = new Resource(1, "Carbonio", 50);
-        Resource resource2 = new Resource(2, "Platino", 100);
-        Resource resource3 = new Resource(3, "Argento", 100);
+        Resource resource2 = new Resource(2, "Platino", 50);
+        Resource resource3 = new Resource(3, "Argento", 50);
         //adding them to the model
         try {
             ModelLoader.getInstance().addResource(resource1);
@@ -41,24 +41,25 @@ public class Main {
         Job job1 = new Job(1,
                     100,
                             new int[][]{{1, 2}, {2, 3}, {3, 3}, {4, 5}},
-                            new int[][]{{1, 15}, {2, 5}, {3, 34}});
+                            new int[][]{{1, 25}, {2, 20}, {3, 30}});
         Job job2 = new Job(2,
                     100,
                             new int[][]{{1, 4}, {2, 7}, {3, 4}, {4, 1}},
-                            new int[][]{{1, 3}, {2, 12}, {3, 40}});
+                            new int[][]{{1, 10}, {2, 10}, {3, 15}});
         Job job3 = new Job(3,
                     100,
                             new int[][]{{1, 1}, {2, 1}, {3, 3}, {4, 2}},
-                            new int[][]{{1, 49}, {2, 20}, {3, 8}});
+                            new int[][]{{1, 40}, {2, 20}, {3, 20}});
 
         ModelLoader.getInstance().addJob(job1);
         ModelLoader.getInstance().addJob(job2);
         ModelLoader.getInstance().addJob(job3);
 
         //adding a list of some resourceLoad events
-        ModelLoader.getInstance().addResourceLoad(new ResourceLoad(resource1, 1, 3));
-        ModelLoader.getInstance().addResourceLoad(new ResourceLoad(resource1, 10, 7));
-        ModelLoader.getInstance().addResourceLoad(new ResourceLoad(resource1, 50, 9));
+        ModelLoader.getInstance().addResourceLoad(new ResourceLoad(resource1, 20, 5));
+        ModelLoader.getInstance().addResourceLoad(new ResourceLoad(resource1, 30, 7));
+        ModelLoader.getInstance().addResourceLoad(new ResourceLoad(resource2, 30, 7));
+        ModelLoader.getInstance().addResourceLoad(new ResourceLoad(resource3, 40, 7));
 
         //create job4
         Job job4 = new Job(4,
@@ -66,7 +67,7 @@ public class Main {
                             new int[][]{{1, 1}, {2, 6}, {3, 3}, {4, 2}},
                             new int[][]{{1, 4}, {2, 7}, {3, 9}});
         //adding a job arrival at step 2
-        ModelLoader.getInstance().addJobArrival(new JobArrival(job4, 2));
+        ModelLoader.getInstance().addJobArrival(new JobArrival(job4, 11));
 
         SummaryPrinter.getInstance().printInitialPlan();
         SummaryPrinter.getInstance().printStartBanner();
