@@ -477,11 +477,15 @@ public class Greedy {
 
     public void execute(List<Job> jobs) {
         this.jobs = jobs;
+        SummaryPrinter.getInstance().newPhase("------------------------ MAIN CYCLE ------------------------");
+        SummaryPrinter.getInstance().warning("In case of multiple solutions, the first will be chosen");
         System.out.println(" ==============================  E X E C U T I O N ============================== ");
         //print all the resources with their quantity.
         System.out.println("Jobs: ");
+        SummaryPrinter.getInstance().info("Jobs:");
         for (Job job : jobs) {
             System.out.println("[JOB] "+job.getId()+" with processing time: " + job.getProcessingTime(1) + " " + job.getProcessingTime(2) + " " + job.getProcessingTime(3));
+            SummaryPrinter.getInstance().info(job.printId()+" with processing time: " + job.getProcessingTime(1) + " " + job.getProcessingTime(2) + " " + job.getProcessingTime(3));
         }
         System.out.println("--------------------------------------");
         System.out.println("Resources: ");
@@ -501,10 +505,15 @@ public class Greedy {
             System.out.println("**********************************************************");
             System.out.println("Step " + step + ": ");
             System.out.println("**********************************************************");
+            SummaryPrinter.getInstance().info("**********************************************************");
+            SummaryPrinter.getInstance().info("Step " + step + ": ");
+            SummaryPrinter.getInstance().info("**********************************************************");
 
             if(isDirtyBacklog()){
                 System.out.println(" -------------------- DIRTY BACKLOG -------------------- ");
+                SummaryPrinter.getInstance().warning("DIRTY BACKLOG");
                 List<JobArrival> jobArrivalByStep = ModelLoader.getInstance().getJobArrivalByStep(step-1);
+                SummaryPrinter.getInstance().warning("Jobs arrived at step " + (step-1) + ": " + jobArrivalByStep.stream().map(JobArrival::getJob).map(Job::printId).map(String::valueOf).collect(Collectors.joining(",")));
                 if(jobArrivalByStep!=null){
                     System.out.println(" << im going to process a job arrival:");
                     //jobs.addAll(jobArrivalByStep.stream().map(JobArrival::getJob).toList());
@@ -512,7 +521,7 @@ public class Greedy {
                     System.out.println("BEFORE - WARNING -> model loader jobs size: "+ModelLoader.getInstance().getJobs().size());
                     ModelLoader.getInstance().addJobs(jobArrivalByStep.stream().map(JobArrival::getJob).toList());
                     System.out.println("AFTER - WARNING -> model loader jobs size: "+ModelLoader.getInstance().getJobs().size());
-
+                    SummaryPrinter.getInstance().warning("Jobs added to modelLoader: " + jobArrivalByStep.stream().map(JobArrival::getJob).map(Job::printId).map(String::valueOf).collect(Collectors.joining(",")));
                     // ----------------- GREEDY -----------------
                     //init the greedy algorithm
                     this.jobs = ModelLoader.getInstance().getSortedJobs();
@@ -523,6 +532,8 @@ public class Greedy {
 
                     System.out.println(" -------------------- CLEAN BACKLOG -------------------- ");
                     ModelLoader.getInstance().clearJobArrivalStep(step-1);
+                    SummaryPrinter.getInstance().warning("CLEAN UP BACKLOG  [DONE]");
+                    SummaryPrinter.getInstance().newLine();
                     dirtyBacklog = false;
 
                 }
