@@ -18,6 +18,7 @@ public class SummaryPrinter {
     //singleton pattern
     private static SummaryPrinter instance = null;
     private final String separator = "===============================================================";
+    private final String simple_separator = "---------------------------------------------------------------";
 
     private SummaryPrinter() {
     }
@@ -27,6 +28,10 @@ public class SummaryPrinter {
             instance = new SummaryPrinter();
         }
         return instance;
+    }
+
+    public void separator(){
+        SummaryLogger.getInstance().append(simple_separator+"\n");
     }
 
     //print a start message to a string buffer and then pass it to the SummaryLogger
@@ -170,5 +175,9 @@ public class SummaryPrinter {
         sb.append("                  S T A R T I N G   E X E C U T I O N").append("\n\n");
         sb.append(separator).append("\n");
         SummaryLogger.getInstance().append(sb.toString());
+    }
+
+    public void newPhase(String s) {
+        SummaryLogger.getInstance().append(s);
     }
 }

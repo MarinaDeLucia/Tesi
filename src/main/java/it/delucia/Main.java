@@ -81,12 +81,13 @@ public class Main {
             System.out.println(job);
             SummaryPrinter.getInstance().info("  - "+job.printId()+" with processing time: "+job.getProcessingTime());
         }
-        SummaryPrinter.getInstance().newLine();
+        //SummaryPrinter.getInstance().newLine();
 
         //print overall makespan
         int makespan = ModelLoader.getInstance().getMakespan();
         System.out.println("Overall makespan: " + makespan);
         System.out.println("ok");
+        SummaryPrinter.getInstance().info("Overall makespan: "+makespan);
 
         // ----------------- GREEDY -----------------
         //init the greedy algorithm

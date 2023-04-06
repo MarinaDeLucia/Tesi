@@ -1,6 +1,7 @@
 package it.delucia.algo;
 
 import it.delucia.Settings;
+import it.delucia.logger.SummaryPrinter;
 import it.delucia.model.Job;
 import it.delucia.model.Machine;
 import it.delucia.model.ModelLoader;
@@ -94,11 +95,13 @@ public class Greedy {
         jobs_12.add(extractedJobs.getLeft());
         jobs_12.add(extractedJobs.getRight());
         int makespan_12 = localSearch(jobs_12);
+        SummaryPrinter.getInstance().info("Greedy: local search on jobs: " + jobs_12.stream().map(Job::printId).collect(Collectors.joining(", ")) + " wih makespan: " + makespan_12);
         //create a new list with the reverdesd order of the extracted jobs
         List<Job> jobs_21 = new LinkedList<>();
         jobs_21.add(extractedJobs.getRight());
         jobs_21.add(extractedJobs.getLeft());
         int makespan_21 = localSearch(jobs_21);
+        SummaryPrinter.getInstance().info("Greedy: local search on jobs: " + jobs_21.stream().map(Job::printId).collect(Collectors.joining(", ")) + " wih makespan: " + makespan_21);
         //if makespan_12 < makespan_21 then add the jobs in the original order in the extracted jobs list
 
         List<List<Job>> allSolutions = new LinkedList<>();
@@ -125,7 +128,9 @@ public class Greedy {
             tempSolution.addAll(jobs_21);
             allSolutions.add(tempSolution);
         }
-
+        SummaryPrinter.getInstance().info("Winning solution: " + allSolutions.stream().map(s -> s.stream().map(Job::printId).collect(Collectors.joining(", "))).collect(Collectors.joining(" - ")));
+        SummaryPrinter.getInstance().info("Winning makespan: " + Math.min(makespan_12, makespan_21));
+        SummaryPrinter.getInstance().newPhase("\n-------------------------- GREEDY --------------------------\n");
         System.out.println("+++++++++++++++++++++++++++++++ STARTING GREEDY  +++++++++++++++++++++++++++++++");
         System.out.println(">> Initial minimal plans size: "+ allSolutions.size());
 
@@ -155,6 +160,7 @@ public class Greedy {
             Iterator<List<Job>> iterator = allSolutions.iterator();
             while(iterator.hasNext()){
                 System.out.println(">>>>>>>>>>>>> INSERTING JOB: " + job.printId() + " <<<<<<<<<<<<<<<<");
+                SummaryPrinter.getInstance().info("Greedy: inserting job: [" + job.printId()+"]");
                 //find the best order for the current job
                 Pair<List<List<Job>>, Integer> allMinimalSequences = findNewBestOrder(iterator.next(), job);
                 //estraggo tutte le sequenze minimali
@@ -193,20 +199,36 @@ public class Greedy {
             System.out.println(">> The Solution Plan is NOT FEASIBLE because the makespan is greater than the threshold:"+ ModelLoader.getInstance().getMakespanThreshold());
             System.out.println(">> amount of time needed to complete all jobs: " + (currentBestMakespan - ModelLoader.getInstance().getMakespanThreshold()));
             System.out.println(("************************************************************************"));
+            //reconstruct all the prints above with the SummaryPrinter using the warning
+            //method
+            SummaryPrinter.getInstance().newPhase("\n**********************          WARNING         **********************\n");
+            SummaryPrinter.getInstance().warning(">> PLAN NOT FEASIBLE");
+            SummaryPrinter.getInstance().warning(">> The Solution Plan is NOT FEASIBLE because the makespan is greater than the threshold:"+ ModelLoader.getInstance().getMakespanThreshold());
+            SummaryPrinter.getInstance().warning(">> amount of time needed to complete all jobs: " + (currentBestMakespan - ModelLoader.getInstance().getMakespanThreshold()));
+            SummaryPrinter.getInstance().separator();
         }
         int i=1;
+        SummaryPrinter.getInstance().newPhase("\n------------------------ FINAL SOLUTIONS ------------------------\n");
         for(List<Job> solution : allSolutions) {
             System.out.println(">> PLAN "+ i + ")");
+            SummaryPrinter.getInstance().info(">> PLAN "+ i + ")");
             String feasible = isFeasible(currentBestMakespan) ? "FEASIBLE" : "NOT FEASIBLE";
             System.out.println(">> Greedy Makespan: " + currentBestMakespan);
             System.out.println(">> Makspan Trheshold: " + ModelLoader.getInstance().getMakespanThreshold());
             System.out.println(">> The Solution Plan is: " + feasible);
 
+            SummaryPrinter.getInstance().info("  - Greedy Makespan: " + currentBestMakespan);
+            SummaryPrinter.getInstance().info("  - Makspan Trheshold: " + ModelLoader.getInstance().getMakespanThreshold());
+            SummaryPrinter.getInstance().info("  - The Solution Plan is: " + feasible);
+
             //print all jobs of this plan in one line, use java stream and use "," as separator
             System.out.println(solution.stream().map(Job::printId).collect(Collectors.joining(", ")));
+            SummaryPrinter.getInstance().info("  - Solution: "+solution.stream().map(Job::printId).collect(Collectors.joining(", ")));
             i++;
             System.out.println("------------------------------------------------------------------------");
+            SummaryPrinter.getInstance().newLine();
         }
+        SummaryPrinter.getInstance().separator();
 
         //fix the jobs in ModelLoaer:
         ModelLoader.getInstance().getJobs().clear();
@@ -238,20 +260,30 @@ public class Greedy {
         System.out.println("Initial jobs list");
         printJobs();
         System.out.println("--------------------------- BEFORE DESTRUCTION --------------------------------");
+        SummaryPrinter.getInstance().newPhase("-------------------------- DESTRUCTION ------------------------\n");
+        StringBuilder sb = new StringBuilder();
         System.out.print("Job\t");
+        sb.append("\tJob\t");
         for (int i = 1; i <= ModelLoader.getInstance().getNumberOfMachines(); i++) {
             System.out.print("M" + i + "\t");
+            sb.append("M" + i + "\t");
         }
         System.out.println();
+        sb.append("\n\t\t");
         //print the jobs
         for (Job job : jobs) {
             System.out.print(job.getId() + "\t");
+            sb.append(job.getId() + "\t");
             for (int i = 1; i <= ModelLoader.getInstance().getNumberOfMachines(); i++) {
                 System.out.print(job.getProcessingTime(i) + "\t");
+                sb.append(job.getProcessingTime(i) + "\t");
             }
             System.out.println();
+            sb.append("\n\t\t");
         }
+        SummaryPrinter.getInstance().info(sb.toString());
         System.out.println("-------------------------------------------------------------------------------");
+        SummaryPrinter.getInstance().separator();
 
         //if size of the list is <= 2 then throw an exception
         if (jobs.size() <= 2) {
@@ -264,6 +296,7 @@ public class Greedy {
 
         //print the extracted jobs
         System.out.println("Greedy: extracted jobs -> " + job_extracted_1 + " " + job_extracted_2);
+        SummaryPrinter.getInstance().info("Greedy: extracted jobs -> " + job_extracted_1.printId() + " and " + job_extracted_2.printId());
 
         //print the remaining jobs
         System.out.println("Greedy: remaining jobs");
@@ -382,6 +415,7 @@ public class Greedy {
         result.add(0, newElement);
 
         int bestMakespan = localSearch(result);
+        SummaryPrinter.getInstance().info("Greedy: new sequence: " + result.stream().map(Job::printId).map(String::valueOf).collect(Collectors.joining(",")) + " with makespan: " + bestMakespan);
         System.out.println("Greedy: local makespan: " + bestMakespan);
 
         Map<Integer,List<List<Job>>> map = new HashMap<>(); //map of makespan and sequence
@@ -404,9 +438,11 @@ public class Greedy {
             for (Job job : newSeq) {
                 System.out.print(job.getId() + " ");
             }
+            //use joining ,
             System.out.println("\n--------------------------------------");
             //evaluate the makespan of the new sequence
             int makespan = localSearch(newSeq);
+            SummaryPrinter.getInstance().info("Greedy: new sequence: " + newSeq.stream().map(Job::printId).map(String::valueOf).collect(Collectors.joining(",")) + " with makespan: " + makespan);
             System.out.println("Greedy: local makespan: " + makespan);
             //if the makespan is better than the result is the newSeq
             if (makespan < bestMakespan) {
@@ -425,7 +461,15 @@ public class Greedy {
         }
         //return the best sequence
         System.out.println("Greedy: best makespan: " + bestMakespan);
+        SummaryPrinter.getInstance().info("Result:");
+        SummaryPrinter.getInstance().info("   - Best makespan: " + bestMakespan);
         Pair<List<List<Job>>, Integer> pair = Pair.of(map.get(bestMakespan), bestMakespan);
+        SummaryPrinter.getInstance().info("   - Numeber of sequences with the same best makespan: " + map.get(bestMakespan).size());
+        //print in summaryprinter all the sequences with the same makespan
+        for(List<Job> jobList : map.get(bestMakespan)) {
+            SummaryPrinter.getInstance().info("       - Best sequence: " + jobList.stream().map(Job::printId).map(String::valueOf).collect(Collectors.joining(",")) + " with makespan: " + bestMakespan);
+        }
+        SummaryPrinter.getInstance().newLine();
         System.out.println(">>>>> Ho trovato " + map.get(bestMakespan).size() + " sequenze con makespan " + bestMakespan);
         return pair;
     }
