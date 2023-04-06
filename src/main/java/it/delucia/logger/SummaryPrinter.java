@@ -49,6 +49,10 @@ public class SummaryPrinter {
 
     }
 
+    public void newLine() {
+        SummaryLogger.getInstance().append("\n");
+    }
+
     public void printInitialPlan(){
         StringBuilder sb = new StringBuilder();
         sb.append("INITIAL PLAN:").append("\n");

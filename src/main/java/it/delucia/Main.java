@@ -75,10 +75,13 @@ public class Main {
         //get sorted list of jobs
         List<Job> sortedJobs = ModelLoader.getInstance().getSortedJobs();
 
+        SummaryPrinter.getInstance().info("Job list, ordered by slacktime:");
         //print sorted list of jobs
         for (Job job : sortedJobs) {
             System.out.println(job);
+            SummaryPrinter.getInstance().info("  - "+job.printId()+" with processing time: "+job.getProcessingTime());
         }
+        SummaryPrinter.getInstance().newLine();
 
         //print overall makespan
         int makespan = ModelLoader.getInstance().getMakespan();
