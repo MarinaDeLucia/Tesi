@@ -573,7 +573,10 @@ public class Greedy {
                     SummaryPrinter.getInstance().warning("There is no job that can be completed with the current resources");
                 }
             }
+            //Create a string matrix with 4 rows and many columns as the number of resources
+            String[][] matrix = new String[4][ModelLoader.getInstance().getResources().size()];
             //check if there is some new load of resource at this step and update the resources amount
+            boolean newResourceLoad = false;
             for(Resource resource : ModelLoader.getInstance().getResources()){
                 //find resource load by resource id, and then filter it by step by using java stream
                 final int s = step;
@@ -585,16 +588,60 @@ public class Greedy {
                     System.out.println("ResourceLoad: " + rl.getResource().getName() + " at step " + rl.getStep() + " has the quantity " + rl.getQuantity());
                 }
                 int quantityAtThisStep = 0;
+
                 for(ResourceLoad rl : resourceLoad){
                     if(rl.getStep() == step){
+                        newResourceLoad = true;
+                        //print on summary log the previous resorse amount and the new one and the total
                         quantityAtThisStep += rl.getQuantity();
                         //ModelLoader.getInstance().depleteResourceLoad(rl);
                     }
                 }
-
+                //fill the matrix composing this table
+                // RESOURCES:  RESOURCE1    RESOURCE2    RESOURCE3
+                // OLD AMOUNT:  10           20           30
+                // NEW AMOUNT:  10           20           30
+                // TOTAL:       20           40           60
+                matrix[0][resource.getId()-1] = resource.getName();
+                matrix[1][resource.getId()-1] = String.valueOf(resource.getQuantity());
+                matrix[2][resource.getId()-1] = String.valueOf(quantityAtThisStep);
+                matrix[3][resource.getId()-1] = String.valueOf(resource.getQuantity() + quantityAtThisStep);
                 System.out.println(">> Total quantity to add to resource " + resource.getName() + " is " + quantityAtThisStep + " at step " + step + "");
                 resource.addQuantity(quantityAtThisStep);
             }
+
+            //fai un if dove controlli che la riga con i NEW AMOUNT sia tutta a 0
+            //se è tutta a 0 vuol dire che non ci sono nuovi carichi di risorse
+
+            if(newResourceLoad){
+                System.out.println("There are no new resource load at this step");
+                //print the matrix into a StringBuilder string and then print into summary log
+                StringBuilder sb = new StringBuilder();
+                sb.append("\n\t\tRESOURCES\t");
+                for(int i = 0; i < matrix[0].length; i++){
+                    sb.append(matrix[0][i]).append("\t");
+                }
+                sb.append("\n\t\tOLD AMOUNT\t");
+                for(int i = 0; i < matrix[1].length; i++){
+                    sb.append(matrix[1][i]).append("\t");
+                }
+                sb.append("\n\t\tNEW AMOUNT\t");
+                for(int i = 0; i < matrix[2].length; i++){
+                    sb.append(matrix[2][i]).append("\t");
+                }
+                sb.append("\n\t\t     TOTAL\t");
+                for(int i = 0; i < matrix[3].length; i++){
+                    sb.append(matrix[3][i]).append("\t");
+                }
+                SummaryPrinter.getInstance().warning("Resource load has been processed:\n"+sb.toString());
+                SummaryPrinter.getInstance().newLine();
+            }else{
+                SummaryPrinter.getInstance().info("NO NEW RESOURCES LOAD AT THIS STEP");
+            }
+
+
+
+
 
             //check if there is some new JobArrival in model for this step. If so, get those and move them into the
             //job list and set the dirtyjob flag to true
