@@ -548,18 +548,29 @@ public class Greedy {
                     process(jobs.get(0));
                 }
             }else{
+                SummaryPrinter.getInstance().warning("NOT ENOUGH RESOURCES to complete the next job");
                 System.out.println("There are not enough resources to complete the next job");
                 //check all jobs, and see if there is a job that can be completed with the current resources
                 System.out.println("Checking if there is a job that can be completed with the current resources ..");
+                SummaryPrinter.getInstance().warning("Checking if there is a job that can be completed with the current resources ..");
+                boolean found = false;
                 for(Job job : jobs){
                     if(analyzeJobsByResources(List.of(job)) == NOT_ENOUGH_RESOURCE_AT_ALL){
                         System.out.println("Job " + job.getId() + " can't be completed with the current resources");
+                        SummaryPrinter.getInstance().warning("  - Checking if [" + job.printId() + "] can be completed with the current resources [FAILED]");
                     }else{
                         System.out.println("Job " + job.getId() + " can be completed with the current resources");
+                        SummaryPrinter.getInstance().warning("  - Checking if [" + job.printId() + "] can be completed with the current resources [SUCCESS]");
                         //add the job to the backlog
+                        found = true;
                         process(job);
                         break;
                     }
+                }
+                //print that there is no job that can be completed with the current resources if found is false
+                if(!found){
+                    System.out.println("There is no job that can be completed with the current resources");
+                    SummaryPrinter.getInstance().warning("There is no job that can be completed with the current resources");
                 }
             }
             //check if there is some new load of resource at this step and update the resources amount
@@ -606,7 +617,7 @@ public class Greedy {
 
 
     public void process(Job job){
-        SummaryPrinter.getInstance().info("The job [" + jobs.get(0).printId() + "] will be processed");
+        SummaryPrinter.getInstance().info("The job [" + job.printId() + "] will be processed");
         System.out.println("Process job " + job.printId());
         //update the resources quantity
         for(Resource resource : ModelLoader.getInstance().getResources()){
