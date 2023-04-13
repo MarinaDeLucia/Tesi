@@ -269,7 +269,7 @@ public class Greedy {
             sb.append("M" + i + "\t");
         }
         System.out.println();
-        sb.append("\n\t");
+        sb.append("\n\t\t");
         //print the jobs
         for (Job job : jobs) {
             System.out.print(job.getId() + "");
@@ -279,7 +279,7 @@ public class Greedy {
                 sb.append(job.getProcessingTime(i) + "\t");
             }
             System.out.println();
-            sb.append("\n\t");
+            sb.append("\n\t\t");
         }
         SummaryPrinter.getInstance().info(sb.toString());
         System.out.println("-------------------------------------------------------------------------------");
