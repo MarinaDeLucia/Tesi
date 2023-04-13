@@ -542,6 +542,7 @@ public class Greedy {
             //check if there are enough resource to complete the first job
             int result = analyzeJobsByResources(jobs);
             if(result != NOT_ENOUGH_RESOURCE_AT_ALL){
+                SummaryPrinter.getInstance().info("There are enough resources to complete the next job");
                 //the result represent the id of the first job that has to go to the backlog
                 if(!jobs.isEmpty()) {
                     process(jobs.get(0));
@@ -605,16 +606,28 @@ public class Greedy {
 
 
     public void process(Job job){
-        System.out.println("Process job " + job.getId());
+        SummaryPrinter.getInstance().info("The job [" + jobs.get(0).printId() + "] will be processed");
+        System.out.println("Process job " + job.printId());
         //update the resources quantity
         for(Resource resource : ModelLoader.getInstance().getResources()){
             Integer consumptionByResource = job.getConsumptionByResource(resource.getId());
-            System.out.println("Job: "+job.getId()+" consume "+consumptionByResource+" of resource "+resource.getName());
+            System.out.println("  - Job: "+job.printId()+" consume "+consumptionByResource+" of resource "+resource.getName());
             resource.removeQuantity(consumptionByResource);
+            SummaryPrinter.getInstance().info("  - ["+job.printId()+"] is consuming "+consumptionByResource+" of resource ["+resource.getName()+"]");
         }
         //remove job from the jobs list
         ModelLoader.getInstance().removeJob(job);
         this.jobs.remove(job);
+        SummaryPrinter.getInstance().info("  - ["+job.printId()+"] has been removed from the model");
+        SummaryPrinter.getInstance().info("The Job ["+job.printId()+"] has been processed [SUCCESS]");
+
+        //print the current amount of resources using SummaryPrinter
+        SummaryPrinter.getInstance().info("The updated current amount of resources is:");
+        for(Resource resource : ModelLoader.getInstance().getResources()){
+            SummaryPrinter.getInstance().info("  - ["+resource.getName()+"] has the quantity ["+resource.getQuantity()+"]");
+        }
+
+
     }
 
     public int analyzeJobsByResources(List<Job> jobs){
