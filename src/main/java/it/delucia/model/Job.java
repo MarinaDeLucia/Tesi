@@ -31,6 +31,10 @@ public class Job implements Comparable<Job> {
         resourceConsumptionMatrixToMap(resourceConsumptionMatrix);
     }
 
+    public Map<Integer, Integer> getProcessingTimesMap() {
+        return processingTimesMap;
+    }
+
     private void resourceConsumptionMatrixToMap(int [][] resourceConsumptionMatrix){
         resourceConsumptionMap = new java.util.HashMap<>();
         for (int i = 0; i < resourceConsumptionMatrix.length; i++) {

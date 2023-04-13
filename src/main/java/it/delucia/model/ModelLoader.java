@@ -67,6 +67,12 @@ public class ModelLoader {
     }
 
     public int getNumberOfMachines() {
+        if(numberOfMachines == 0 && jobs.size() > 0){
+            //calculate the number of machine from the jobs
+            return jobs.get(0).getProcessingTimesMap().keySet().size();
+
+        }
+
         return numberOfMachines;
     }
 
