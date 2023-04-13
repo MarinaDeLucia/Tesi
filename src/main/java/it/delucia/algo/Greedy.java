@@ -639,16 +639,21 @@ public class Greedy {
                 SummaryPrinter.getInstance().info("NO NEW RESOURCES LOAD AT THIS STEP");
             }
 
-
-
-
-
             //check if there is some new JobArrival in model for this step. If so, get those and move them into the
             //job list and set the dirtyjob flag to true
             List<JobArrival> jobArrivalByStep = ModelLoader.getInstance().getJobArrivalByStep(step);
             if(jobArrivalByStep!= null && !jobArrivalByStep.isEmpty()){
                 System.out.println("WARNING, at the step "+step+" there is a Job Arrival !");
                 this.dirtyBacklog = true;
+                SummaryPrinter.getInstance().warning("there is a Job Arrival !");
+                //print the list of the new jobs
+                SummaryPrinter.getInstance().info("The following jobs have been added to the backlog:");
+                for(JobArrival jobArrival : jobArrivalByStep){
+                    SummaryPrinter.getInstance().info("  - ["+jobArrival.getJob().printId()+"]");
+                }
+                SummaryPrinter.getInstance().info("Backlog Status: [DIRTY]");
+            }else{
+                SummaryPrinter.getInstance().info("Backlog Status: [CLEAN]");
             }
 
             step++;
@@ -656,6 +661,10 @@ public class Greedy {
         System.out.println("Finished at step: " + step);
         System.out.println(ModelLoader.getInstance().getJobs().size());
         System.out.println("-----------------------------------");
+        SummaryPrinter.getInstance().separator();
+        SummaryPrinter.getInstance().info("Finished at step: " + step);
+        SummaryPrinter.getInstance().info("Number of jobs in the backlog: " + ModelLoader.getInstance().getJobs().size());
+        SummaryPrinter.getInstance().info("Nothing to do, time to go home !");
     }
 
     public boolean isDirtyBacklog(){
