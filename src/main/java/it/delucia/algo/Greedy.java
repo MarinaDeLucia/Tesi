@@ -269,17 +269,17 @@ public class Greedy {
             sb.append("M" + i + "\t");
         }
         System.out.println();
-        sb.append("\n\t\t");
+        sb.append("\n\t");
         //print the jobs
         for (Job job : jobs) {
-            System.out.print(job.getId() + "\t");
+            System.out.print(job.getId() + "");
             sb.append(job.getId() + "\t");
             for (int i = 1; i <= ModelLoader.getInstance().getNumberOfMachines(); i++) {
                 System.out.print(job.getProcessingTime(i) + "\t");
                 sb.append(job.getProcessingTime(i) + "\t");
             }
             System.out.println();
-            sb.append("\n\t\t");
+            sb.append("\n\t");
         }
         SummaryPrinter.getInstance().info(sb.toString());
         System.out.println("-------------------------------------------------------------------------------");
@@ -619,7 +619,7 @@ public class Greedy {
                 StringBuilder sb = new StringBuilder();
                 sb.append("\n\t\tRESOURCES\t");
                 for(int i = 0; i < matrix[0].length; i++){
-                    sb.append(matrix[0][i]).append("\t");
+                    sb.append("R"+(i+1)).append("\t");
                 }
                 sb.append("\n\t\tOLD AMOUNT\t");
                 for(int i = 0; i < matrix[1].length; i++){
@@ -634,6 +634,7 @@ public class Greedy {
                     sb.append(matrix[3][i]).append("\t");
                 }
                 SummaryPrinter.getInstance().warning("Resource load has been processed:\n"+sb.toString());
+                SummaryPrinter.getInstance().info("\nR1 = "+matrix[0][0]+" R2 = "+matrix[0][1]+" R3 = "+matrix[0][2]+"");
                 SummaryPrinter.getInstance().newLine();
             }else{
                 SummaryPrinter.getInstance().info("NO NEW RESOURCES LOAD AT THIS STEP");
