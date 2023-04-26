@@ -8,6 +8,8 @@ public class SummaryLogger {
     private File currentLogFile = null;
     private boolean isClosed = true;
 
+    private String sessionName;
+
     private SummaryLogger() {
     }
 
@@ -19,9 +21,14 @@ public class SummaryLogger {
     }
 
     public void start(String sessionName) {
+        this.sessionName = sessionName;
         createLogsFolder();
         this.currentLogFile = createLogFile(sessionName);
         this.isClosed = false;
+    }
+
+    public String getSessionName() {
+        return sessionName;
     }
 
     //create a log file with a name composed by a timestamp and a string argument passed by argument. The file

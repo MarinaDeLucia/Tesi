@@ -180,4 +180,7 @@ public class SummaryPrinter {
     public void newPhase(String s) {
         SummaryLogger.getInstance().append(s);
     }
+
+
+
 }

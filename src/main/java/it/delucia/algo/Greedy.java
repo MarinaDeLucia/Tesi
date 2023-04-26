@@ -8,6 +8,10 @@ import it.delucia.model.ModelLoader;
 import it.delucia.model.Resource;
 import it.delucia.model.events.JobArrival;
 import it.delucia.model.events.ResourceLoad;
+import it.delucia.plotter.PlotterManager;
+import it.delucia.plotter.Schedule;
+import it.delucia.plotter.ScheduledEvent;
+import it.delucia.plotter.ScheduledJob;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
@@ -477,6 +481,8 @@ public class Greedy {
 
     public void execute(List<Job> jobs) {
         this.jobs = jobs;
+
+
         SummaryPrinter.getInstance().newPhase("------------------------ MAIN CYCLE ------------------------");
         SummaryPrinter.getInstance().warning("In case of multiple solutions, the first will be chosen");
         System.out.println(" ==============================  E X E C U T I O N ============================== ");
@@ -502,6 +508,64 @@ public class Greedy {
         int step = 1;
 //        List<Job> backlog = new LinkedList<>(); //list of jobs that cant be done because there are not enough resources
         while(!ModelLoader.getInstance().hasNothingTodo() && step < Settings.MAX_STEP){
+
+
+            // ....................... JSON PRINTING .......................
+            if(step == 1) {
+                //the map represent as Keys the machines and as values the endtime for each machine
+                Map<Integer, Integer> endTimeMap = new HashMap<>();
+                //init the map with all the machines as keys and 0 as values
+                for (int i = 1; i <= ModelLoader.getInstance().getNumberOfMachines(); i++) {
+                    endTimeMap.put(i, 0);
+                }
+
+                Map<Integer,Integer> starTimeMap = new HashMap<>();
+                for (int i = 1; i <= ModelLoader.getInstance().getNumberOfMachines(); i++) {
+                    starTimeMap.put(i, 0);
+                }
+
+
+                List<ScheduledEvent> scheduledEvents = new LinkedList<>();
+                for (Job job : ModelLoader.getInstance().getJobs()) {
+                    for(int machine = 1; machine <= ModelLoader.getInstance().getNumberOfMachines(); machine++) {
+                        endTimeMap.put(machine, endTimeMap.get(machine) + job.getProcessingTime(machine));
+                        scheduledEvents.add(
+                                new ScheduledJob(
+                                        job.printId(),
+                                        machine,
+                                        starTimeMap.get(machine),
+                                        endTimeMap.get(machine) - starTimeMap.get(machine),
+                                        ""
+                                        ));
+                        starTimeMap.put(machine, endTimeMap.get(machine));
+                    }
+                }
+
+                //print the json using the PlotterManager
+                Schedule schedule = new Schedule(scheduledEvents);
+                new PlotterManager.Builder()
+                        .setFolderName("plots")
+                        .setFileName("plant-at-step-"+step)
+                        .prepare(schedule)
+                        .build().printJSON();
+
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             System.out.println("**********************************************************");
             System.out.println("Step " + step + ": ");
             System.out.println("**********************************************************");
