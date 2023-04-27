@@ -2,6 +2,7 @@ package it.delucia.plotter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.delucia.logger.SummaryLogger;
+import org.python.util.PythonInterpreter;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,8 +54,6 @@ public class PlotterManager {
 
     /**
      * Create a file with name fileName and print the schedule in JSON format using Jackson library
-     * @param fileName
-     * @param schedule
      */
     public void printJSON(){
         ObjectMapper mapper = new ObjectMapper();
@@ -72,9 +71,18 @@ public class PlotterManager {
             }
             //create the file
             mapper.writeValue(new File(folderName + "/" + sessionName + "/" + fileName + ".json"), schedule);
+            mapper.writeValue(new File("script/jobs.json"), schedule);
+            Process p = new ProcessBuilder("python", "script/gantt.py", "none").start();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+
+//
+//        PythonInterpreter interpreter = new PythonInterpreter();
+//        interpreter.execfile("script/gantt.py");
+
+
 
 
     }
