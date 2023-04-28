@@ -1,7 +1,20 @@
-import matplotlib.pyplot as plt
+import argparse
 import json
+import matplotlib.pyplot as plt
+from matplotlib.ticker import FormatStrFormatter, MaxNLocator
 
-with open('jobs.json', 'r') as file:
+parser = argparse.ArgumentParser(description="Create Gantt charts for jobs and events in a scheduler")
+parser.add_argument('-i', '--input', type=str, help="Input file name; JSON format, containing a list of events and jobs called 'events'")
+parser.add_argument('-o', '--output', type=str, help='Output file name; it can be PNG, JPEG, PDF, SVG, EPS')
+parser.add_argument('-t', '--title', type=str, help='Title to show on the chart')
+
+args = parser.parse_args()
+
+input_file = args.input
+output_file = args.output
+chart_title = args.title
+
+with open(input_file, 'r') as file:
     data = json.load(file)
 jobs=data['events']
 
@@ -13,14 +26,16 @@ start_times = [job['start'] for job in jobs]
 durations = [job['duration'] if job['type'] == 'JOB' else 0 for job in jobs]
 
 job_names = [job['name'] for job in jobs if job['type'] == 'JOB']
+unique_jobs = list(set(job_names))
 
 event_names = [
     job['name']
     for job in jobs
     if job['type'] in ['EVENT', 'RESOURCE_LOAD', 'JOB_ARRIVAL']
 ]
+unique_events = list(set(event_names))
 event_payloads = [
-    job['payload']
+    job['payload'].replace("\t", " " * 4)
     for job in jobs
     if job['type'] in ['EVENT', 'RESOURCE_LOAD', 'JOB_ARRIVAL']
 ]
@@ -36,8 +51,6 @@ event_types = [
     if job['type'] in ['EVENT', 'RESOURCE_LOAD', 'JOB_ARRIVAL']
 ]
 
-
-
 # create a dictionary to map machine numbers to y-axis positions
 machine_ypos = {machine_numbers[i]: i for i in range(len(machine_numbers))}
 
@@ -45,8 +58,8 @@ machine_ypos = {machine_numbers[i]: i for i in range(len(machine_numbers))}
 colors = {'red': '#FF0000', 'green': '#00FF00', 'blue': '#0000FF', 'yellow': '#FFFF00', 'purple': '#800080', 'orange': '#FFA500', 'black': '#000000', 'gray': '#808080', 'pink': '#FFC0CB', 'brown': '#A52A2A'}
 
 # assign a color to each job or event
-assigned_colors = [colors[list(colors.keys())[i % 10]] for i in range(len(job_names)+len(event_names))]
-
+unified_list = unique_jobs + unique_events
+assigned_colors = [{'color': colors[list(colors.keys())[i % 10]], 'name': unified_list[i]} for i in range(len(unified_list))]
 
 # create the figure and axes
 fig, ax = plt.subplots()
@@ -59,7 +72,6 @@ ax.set_yticks(range(len(machine_numbers)))
 ax.set_yticklabels(machine_numbers)
 ax.set_ylim([-1, len(machine_numbers)])
 
-color_index = 0
 
 # plot the bars for jobs
 for i, job_name in enumerate(job_names):
@@ -68,30 +80,38 @@ for i, job_name in enumerate(job_names):
         duration = durations[i]
         machine = jobs[i]['machine']
         ypos = machine_ypos[machine]
-        ax.barh(ypos, duration, left=start, height=0.5, align='center', color=assigned_colors[color_index], alpha=0.5)
+        job_color=[d['color'] for d in assigned_colors if d['name'] == job_name]
+        ax.barh(ypos, duration, left=start, height=0.5, align='center', color=job_color[0], alpha=0.5)
         ax.text(start+duration/2, ypos, job_name, ha='center', va='center')
-        color_index += 1
+
 
 # plot the events as vertical lines
 for i, event_name in enumerate(event_names):
     start = event_starts[i]
     ypos = len(machine_numbers)
     offset= i % len(machine_numbers)
+    event_color=[d['color'] for d in assigned_colors if d['name'] == event_name]
     linestyle = '-' if event_types[i] == 'EVENT' else '-.' if event_types[i] == 'RESOURCE_LOAD' else ':'
-    ax.plot([start, start], [-1, ypos], linewidth=1, color=assigned_colors[color_index], linestyle=linestyle)
-    ax.annotate(f"{event_name}\n({event_payloads[i]})", xy=(start, (offset-1)+0.5), xytext=(start+1.2, (offset-1)+0.5),
+    ax.plot([start, start], [-1, ypos], linewidth=1, color=event_color[0], linestyle=linestyle)
+    payload="\n" + event_payloads[i] if event_payloads[i] !="" else ""
+    ax.annotate(f"{event_name}{payload}", xy=(start, offset), xytext=(start+1.2, offset), fontfamily='monospace',
             bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5),
             arrowprops=dict(arrowstyle='->', color='red'))
     ax.text(start, ypos, f"{event_name}", ha='center', va='bottom')
-    color_index += 1
 
 # Create a list of job names and their corresponding colors for the legend
-legend_elements = [plt.Line2D([0], [0], color=assigned_colors[i], lw=2, label=job['name']) for i, job in enumerate(jobs) if job['type'] == 'JOB']
+assigned_job_color=[(d['name'], d['color']) for d in assigned_colors if d['name'] in unique_jobs]
+legend_elements = [plt.Line2D([0], [0], color=assigned_job_color[i][1], lw=2, label=assigned_job_color[i][0]) for i, job in enumerate(assigned_job_color)]
 ax.legend(handles=legend_elements, loc='center left', bbox_to_anchor=(1, 0.5), fancybox=True, shadow=True)
 
 # final formatting
 ax.grid(False)
+ax.invert_yaxis()
+# Set the x-axis locator and formatter
+ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+ax.xaxis.set_major_formatter(FormatStrFormatter('%d'))
 fig.set_figwidth(15)
 fig.set_figheight(10)
 
-plt.show()
+plt.title(chart_title, fontsize=24, fontweight='bold')
+plt.savefig(output_file)

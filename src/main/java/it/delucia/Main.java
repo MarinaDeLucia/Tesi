@@ -55,6 +55,8 @@ public class Main {
         ModelLoader.getInstance().addJob(job2);
         ModelLoader.getInstance().addJob(job3);
 
+        ModelLoader.getInstance().setNumberOfMachines(4);
+
         //adding a list of some resourceLoad events
         ModelLoader.getInstance().addResourceLoad(new ResourceLoad(resource1, 20, 5));
         ModelLoader.getInstance().addResourceLoad(new ResourceLoad(resource1, 30, 7));

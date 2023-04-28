@@ -8,10 +8,7 @@ import it.delucia.model.ModelLoader;
 import it.delucia.model.Resource;
 import it.delucia.model.events.JobArrival;
 import it.delucia.model.events.ResourceLoad;
-import it.delucia.plotter.PlotterManager;
-import it.delucia.plotter.Schedule;
-import it.delucia.plotter.ScheduledEvent;
-import it.delucia.plotter.ScheduledJob;
+import it.delucia.plotter.*;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
@@ -30,6 +27,8 @@ public class Greedy {
     public static final int ENOUGH_RESOURCE_FOR_ALL_JOBS = -1;
     public static final int NOT_ENOUGH_RESOURCE_AT_ALL = -2;
     private boolean dirtyBacklog = false; //true if there is some new job to be processed
+
+    private List<Job> processedJobs = new LinkedList<>();
 
     private Greedy() {
     }
@@ -506,6 +505,7 @@ public class Greedy {
         System.out.println("Jobs in modelLoader: " + ModelLoader.getInstance().getJobs().size());
         //print all jobs
         int step = 1;
+        List<ScheduledEvent> scheduledEvents = new LinkedList<>();
 //        List<Job> backlog = new LinkedList<>(); //list of jobs that cant be done because there are not enough resources
         while (!ModelLoader.getInstance().hasNothingTodo() && step < Settings.MAX_STEP) {
 
@@ -513,7 +513,7 @@ public class Greedy {
             // ....................... JSON PRINTING .......................
             if (step == 1) {
 
-                List<ScheduledEvent> scheduledEvents = new LinkedList<>();
+
                 Map<Integer, Integer> machineDelayMap = new HashMap<>();
                 //init the map with machine keys and 0 values
                 for (int i = 1; i <= ModelLoader.getInstance().getNumberOfMachines(); i++) {
@@ -526,11 +526,13 @@ public class Greedy {
                                         job.printId(),
                                         machine,
                                         machineDelayMap.get(machine),
-                                        machineDelayMap.get(machine) + job.getProcessingTime(machine),
+                                        job.getProcessingTime(machine),
                                         ""
                                 ));
                         if (machine != ModelLoader.getInstance().getNumberOfMachines()) {
                             machineDelayMap.put(machine + 1, machineDelayMap.get(machine) + job.getProcessingTime(machine));
+                        }else{
+                            machineDelayMap.put(1, machineDelayMap.get(1) + job.getProcessingTime(1));
                         }
                     }
                 }
@@ -539,9 +541,13 @@ public class Greedy {
                 Schedule schedule = new Schedule(scheduledEvents);
                 new PlotterManager.Builder()
                         .setFolderName("plots")
-                        .setFileName("plant-at-step-" + step)
+                        .setFileName("plan-at-step-" + step)
                         .prepare(schedule)
-                        .build().printJSON();
+                        .build().printJSON(
+                                "initial-plan",
+                                "Initial-plan",
+                                "Initial Plan"
+                        );
 
             }
 
@@ -582,6 +588,53 @@ public class Greedy {
                     SummaryPrinter.getInstance().warning("CLEAN UP BACKLOG  [DONE]");
                     SummaryPrinter.getInstance().newLine();
                     dirtyBacklog = false;
+
+
+                    //remove all jobs from scheduledEvents that are instance of ScheduledJob
+                    scheduledEvents.removeIf(scheduledEvent -> scheduledEvent instanceof ScheduledJob);
+
+                    Map<Integer, Integer> machineDelayMap = new HashMap<>();
+                    //init the map with machine keys and 0 values
+                    for (int i = 1; i <= ModelLoader.getInstance().getNumberOfMachines(); i++) {
+                        machineDelayMap.put(i, 0);
+                    }
+
+
+                    List<Job> rescheduledJobs = new LinkedList<>();
+                    rescheduledJobs.addAll(processedJobs);
+                    rescheduledJobs.addAll(jobs);
+                    for (Job job : rescheduledJobs) {
+                        for (int machine = 1; machine <= ModelLoader.getInstance().getNumberOfMachines(); machine++) {
+
+                            System.out.println("WARNING: RESCHEDULE -> "+job.printId()+" on machine "+machine+" with processing time: "+job.getProcessingTime(machine)+" and delay: "+machineDelayMap.get(machine));
+
+                            scheduledEvents.add(
+                                    new ScheduledJob(
+                                            job.printId(),
+                                            machine,
+                                            machineDelayMap.get(machine),
+                                            job.getProcessingTime(machine),
+                                            ""
+                                    ));
+                            if (machine != ModelLoader.getInstance().getNumberOfMachines()) {
+                                machineDelayMap.put(machine + 1, machineDelayMap.get(machine) + job.getProcessingTime(machine));
+                            }else{
+                                machineDelayMap.put(1, machineDelayMap.get(1) + job.getProcessingTime(1));
+                            }
+                        }
+                    }
+
+                    //print the json using the PlotterManager
+                    Schedule schedule = new Schedule(scheduledEvents);
+                    new PlotterManager.Builder()
+                            .setFolderName("plots")
+                            .setFileName("plan-at-step-" + step)
+                            .prepare(schedule)
+                            .build().printJSON(
+                                    "reschedule-at" + step,
+                                    "reschedule-at" + step,
+                                    "Reschedule after Job Arrivals " + step
+                            );
 
                 }
             }
@@ -683,6 +736,15 @@ public class Greedy {
                 SummaryPrinter.getInstance().warning("Resource load has been processed:\n" + sb.toString());
                 SummaryPrinter.getInstance().info("\nR1 = " + matrix[0][0] + " R2 = " + matrix[0][1] + " R3 = " + matrix[0][2] + "");
                 SummaryPrinter.getInstance().newLine();
+
+                scheduledEvents.add(new ScheduledResourceLoad("+Resources", step ,  sb.toString()));
+
+//                Schedule schedule = new Schedule(scheduledEvents);
+//                new PlotterManager.Builder()
+//                        .setFolderName("plots")
+//                        .setFileName("plan-at-step-" + step)
+//                        .prepare(schedule)
+//                        .build().printJSON();
             } else {
                 SummaryPrinter.getInstance().info("NO NEW RESOURCES LOAD AT THIS STEP");
             }
@@ -700,6 +762,18 @@ public class Greedy {
                     SummaryPrinter.getInstance().info("  - [" + jobArrival.getJob().printId() + "]");
                 }
                 SummaryPrinter.getInstance().info("Backlog Status: [DIRTY]");
+                String jobArrivalString = jobArrivalByStep.stream().map(JobArrival::getJob).map(Job::printId).collect(Collectors.joining(", "));
+
+                scheduledEvents.add(new ScheduledJobArrival("+Job", step ,  "New jobs: " + jobArrivalString));
+
+//                Schedule schedule = new Schedule(scheduledEvents);
+//                new PlotterManager.Builder()
+//                        .setFolderName("plots")
+//                        .setFileName("plan-at-step-" + step)
+//                        .prepare(schedule)
+//                        .build().printJSON();
+//
+
             } else {
                 SummaryPrinter.getInstance().info("Backlog Status: [CLEAN]");
             }
@@ -741,6 +815,7 @@ public class Greedy {
         for (Resource resource : ModelLoader.getInstance().getResources()) {
             SummaryPrinter.getInstance().info("  - [" + resource.getName() + "] has the quantity [" + resource.getQuantity() + "]");
         }
+        this.processedJobs.add(job);
 
 
     }

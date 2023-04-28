@@ -71,19 +71,40 @@ public class PlotterManager {
             }
             //create the file
             mapper.writeValue(new File(folderName + "/" + sessionName + "/" + fileName + ".json"), schedule);
-            mapper.writeValue(new File("script/jobs.json"), schedule);
+            mapper.writeValue(new File("jobs.json"), schedule);
             Process p = new ProcessBuilder("python", "script/gantt.py", "none").start();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
+    }
 
-//
-//        PythonInterpreter interpreter = new PythonInterpreter();
-//        interpreter.execfile("script/gantt.py");
-
-
-
+    public void printJSON(String outputFile, String inputFile, String title){
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            //check if folder exists
+            File folder = new File(folderName);
+            if(!folder.exists()){
+                folder.mkdir();
+            }
+            String sessionName = SummaryLogger.getInstance().getSessionName();
+            //Create a subfolder with the name of the session
+            File sessionFolder = new File(folderName + "/" + sessionName);
+            if(!sessionFolder.exists()){
+                sessionFolder.mkdir();
+            }
+            //create the file
+            mapper.writeValue(new File(folderName + "/" + sessionName + "/" + fileName + ".json"), schedule);
+            mapper.writeValue(new File("script/"+inputFile+".json"), schedule);
+            Process p = new ProcessBuilder("python",
+                    "script/gantt.py",
+                    "-o", outputFile+".png",
+                    "-i", "script/"+inputFile+".json",
+                    "-t", title
+            ).start();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 }

@@ -8,10 +8,10 @@ public class TestJSON {
         //Build a schedule with some event inside and then print it to file "prova.json" using the method available in SummaryPrinter
 
         Schedule schedule = new Schedule();
-        schedule.addEvent(new ScheduledJobArrival("Job1", 1, 0, "some text"));
-        schedule.addEvent(new ScheduledJobArrival("Job2", 3, 3, "some other text"));
-        schedule.addEvent(new ScheduledResourceLoad("+R", 1, 2, "Diamanti +1, Oro +1"));
-        schedule.addEvent(new ScheduledResourceLoad("+R", 3, 5, "some other text"));
+        schedule.addEvent(new ScheduledJobArrival("Job1", 1, "some text"));
+        schedule.addEvent(new ScheduledJobArrival("Job2", 3, "some other text"));
+        schedule.addEvent(new ScheduledResourceLoad("+R", 1, "Diamanti +1, Oro +1"));
+        schedule.addEvent(new ScheduledResourceLoad("+R", 3,"some other text"));
         schedule.addEvent(new ScheduledJob("Job1", 1, 0, 3, "some text"));
 
         new PlotterManager.Builder().prepare(schedule)
