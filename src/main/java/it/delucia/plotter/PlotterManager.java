@@ -100,7 +100,8 @@ public class PlotterManager {
                     "script/gantt.py",
                     "-o", outputFile+".png",
                     "-i", "script/"+inputFile+".json",
-                    "-t", title
+                    "-t", title,
+                    "-s"
             ).start();
         } catch (IOException e) {
             throw new RuntimeException(e);

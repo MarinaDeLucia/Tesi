@@ -1,0 +1,156 @@
+{
+  "events": [
+    {
+      "name": "J3",
+      "type": "JOB",
+      "machine": 1,
+      "start": 0,
+      "duration": 1,
+      "payload": ""
+    },
+    {
+      "name": "J3",
+      "type": "JOB",
+      "machine": 2,
+      "start": 1,
+      "duration": 1,
+      "payload": ""
+    },
+    {
+      "name": "J3",
+      "type": "JOB",
+      "machine": 3,
+      "start": 2,
+      "duration": 3,
+      "payload": ""
+    },
+    {
+      "name": "J3",
+      "type": "JOB",
+      "machine": 4,
+      "start": 5,
+      "duration": 2,
+      "payload": ""
+    },
+    {
+      "name": "J2",
+      "type": "JOB",
+      "machine": 1,
+      "start": 1,
+      "duration": 4,
+      "payload": ""
+    },
+    {
+      "name": "J2",
+      "type": "JOB",
+      "machine": 2,
+      "start": 5,
+      "duration": 7,
+      "payload": ""
+    },
+    {
+      "name": "J2",
+      "type": "JOB",
+      "machine": 3,
+      "start": 12,
+      "duration": 4,
+      "payload": ""
+    },
+    {
+      "name": "J2",
+      "type": "JOB",
+      "machine": 4,
+      "start": 16,
+      "duration": 1,
+      "payload": ""
+    },
+    {
+      "name": "J1",
+      "type": "JOB",
+      "machine": 1,
+      "start": 9,
+      "duration": 2,
+      "payload": ""
+    },
+    {
+      "name": "J1",
+      "type": "JOB",
+      "machine": 2,
+      "start": 12,
+      "duration": 3,
+      "payload": ""
+    },
+    {
+      "name": "J1",
+      "type": "JOB",
+      "machine": 3,
+      "start": 16,
+      "duration": 3,
+      "payload": ""
+    },
+    {
+      "name": "J1",
+      "type": "JOB",
+      "machine": 4,
+      "start": 19,
+      "duration": 5,
+      "payload": ""
+    },
+    {
+      "name": "J4",
+      "type": "JOB",
+      "machine": 1,
+      "start": 16,
+      "duration": 1,
+      "payload": ""
+    },
+    {
+      "name": "J4",
+      "type": "JOB",
+      "machine": 2,
+      "start": 19,
+      "duration": 6,
+      "payload": ""
+    },
+    {
+      "name": "J4",
+      "type": "JOB",
+      "machine": 3,
+      "start": 25,
+      "duration": 3,
+      "payload": ""
+    },
+    {
+      "name": "J4",
+      "type": "JOB",
+      "machine": 4,
+      "start": 28,
+      "duration": 2,
+      "payload": ""
+    },
+    {
+      "name": "+Resources",
+      "type": "RESOURCE_LOAD",
+      "machine": 0,
+      "start": 5,
+      "duration": 0,
+      "payload": "\n\t\tRESOURCES\tR1\tR2\tR3\t\n\t\tOLD AMOUNT\t0\t20\t15\t\n\t\tNEW AMOUNT\t20\t0\t0\t\n\t\t     TOTAL\t20\t20\t15\t"
+    },
+    {
+      "name": "+Resources",
+      "type": "RESOURCE_LOAD",
+      "machine": 0,
+      "start": 9,
+      "duration": 0,
+      "payload": "\n\t\tRESOURCES\tR1\tR2\tR3\t\n\t\tOLD AMOUNT\t20\t20\t15\t\n\t\tNEW AMOUNT\t30\t30\t40\t\n\t\t     TOTAL\t50\t50\t55\t"
+    },
+    {
+      "name": "+Job",
+      "type": "JOB_ARRIVAL",
+      "machine": 0,
+      "start": 16,
+      "duration": 0,
+      "payload": "New jobs: J4"
+    }
+  ]
+}
