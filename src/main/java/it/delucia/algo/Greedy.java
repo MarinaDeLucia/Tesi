@@ -12,6 +12,7 @@ import it.delucia.plotter.*;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 public class Greedy {
@@ -212,6 +213,10 @@ public class Greedy {
         }
         int i = 1;
         SummaryPrinter.getInstance().newPhase("\n------------------------ FINAL SOLUTIONS ------------------------\n");
+
+        //genera un numero casuale da 1 a 3
+        int interruptAtCycle = ThreadLocalRandom.current().nextInt(1, 4);
+
         for (List<Job> solution : allSolutions) {
             System.out.println(">> PLAN " + i + ")");
             SummaryPrinter.getInstance().info(">> PLAN " + i + ")");
@@ -227,9 +232,12 @@ public class Greedy {
             //print all jobs of this plan in one line, use java stream and use "," as separator
             System.out.println(solution.stream().map(Job::printId).collect(Collectors.joining(", ")));
             SummaryPrinter.getInstance().info("  - Solution: " + solution.stream().map(Job::printId).collect(Collectors.joining(", ")));
-            i++;
             System.out.println("------------------------------------------------------------------------");
             SummaryPrinter.getInstance().newLine();
+            if(i == interruptAtCycle) {
+                break;
+            }
+            i++;
         }
         SummaryPrinter.getInstance().separator();
 
