@@ -633,16 +633,16 @@ public class Greedy {
                     }
 
                     //print the json using the PlotterManager
-                    Schedule schedule = new Schedule(scheduledEvents);
-                    new PlotterManager.Builder()
-                            .setFolderName("plots")
-                            .setFileName("plan-at-step-" + step)
-                            .prepare(schedule)
-                            .build().printJSON(
-                                    "reschedule-at" + step,
-                                    "reschedule-at" + step,
-                                    "Reschedule after Job Arrivals " + step
-                            );
+//                    Schedule schedule = new Schedule(scheduledEvents);
+//                    new PlotterManager.Builder()
+//                            .setFolderName("plots")
+//                            .setFileName("plan-at-step-" + step)
+//                            .prepare(schedule)
+//                            .build().printJSON(
+//                                    "reschedule-at" + step,
+//                                    "reschedule-at" + step,
+//                                    "Reschedule after Job Arrivals " + step
+//                            );
 
                 }
             }
